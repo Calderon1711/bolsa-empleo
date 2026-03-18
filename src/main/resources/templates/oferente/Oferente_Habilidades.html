@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Oferente - Habilidades</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/estilos.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="Inicio.html">
+                    <img src="img/bolsaEmpleo.png" alt="BolsaEmpleo" width="70" height="70" class="d-inline-block align-text-top">
+                </a>
+                <a class="navbar-brand fw-semibold" href="Inicio.html">BOLSA DE EMPLEO</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                    <div class="navbar-nav">
+                        <a class="nav-link" href="Oferente.html">Dashboard</a>
+                        <a class="nav-link" href="Oferente_Habilidades.html">Mis habilidades</a>
+                        <a class="nav-link" href="#">Mi CV</a>
+                    </div>
+                    <div class="navbar-nav ms-auto">
+                        <a class="nav-link" href="Login.html">Login</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container py-4 flex-grow-1">
+        <div class="mb-3">
+            <h4>Mis habilidades</h4>
+        </div>
+
+        <section class="row g-3">
+            <article class="col-12">
+                    <div class="card-group card h-100 border-10 shadow-sm bg-light">
+                        <div class="card">
+                            <div class="card-body">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Caracter&iacute;stica</th>
+                                            <th scope="col">Nivel</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="table-group-divider">
+                                        <tr>
+                                            <th scope="row">Lenguajes de programaci&oacute;n</th>
+                                            <td>4</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Lenguajes de programaci&oacute;n / Java</th>
+                                            <td>5</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Tenolog&iacute;as Web</th>
+                                            <td>4</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Bases de datos / Modelado</th>
+                                            <td>5</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Testing / Junit/ Assertions</th>
+                                            <td>3</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Ruta</h5>
+                                <nav aria-label="breadcrumb">
+                                    <ol class="breadcrumb">
+                                        <li class="breadcrumb-item">
+                                            <a href="#" class="btn btn-outline-primary btn-sm">Ra&iacute;ces</a>
+                                        </li>
+                                        <li class="breadcrumb-item">
+                                            <a href="#" class="btn btn-outline-primary btn-sm">Testing</a>
+                                        </li>
+                                        <li class="breadcrumb-item">
+                                            <a href="#" class="btn btn-outline-primary btn-sm">Junit</a>
+                                        </li>
+                                    </ol>
+                                </nav>
+                                <h6 class="text-secondary small">Subcategor&iacute;as de: <span class="fw-bold">Junit</span></h6>
+                                <div class="card shadow-sm" style="max-width: 350px;">
+                                    <div class="list-group list-group-flush">
+                                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                                            <span class="fw-semibold">Assertions</span>
+                                            <a href="#" class="btn btn-outline-primary btn-sm">Entrar</a>
+                                        </div>
+
+                                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                                            <span class="fw-semibold">Test cases</span>
+                                            <a href="#" class="btn btn-outline-primary btn-sm">Entrar</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="card shadow-sm" style="max-width: 350px;">
+                                    <div class="card-body">
+                                        <h5 class="card-title fw-bold">Agregar Habilidad</h5>
+
+                                        <form>
+                                            <div class="mb-3">
+                                                <label for="caracteristica" class="form-label">Caracter&iacute;stica</label>
+                                                <select class="form-select" id="caracteristica" name="caracteristica">
+                                                    <option value="testcases" selected>Test cases</option>
+                                                    <option value="assertions">Assertions</option>
+                                                    <option value="junit">Junit</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label for="nivel" class="form-label">Nivel (1-5)</label>
+                                                <input type="number" class="form-control" id="nivel" name="nivel" min="1" max="5" value="4">
+                                            </div>
+
+                                            <div class="d-grid">
+                                                <button type="submit" class="btn btn-primary">Agregar</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </article>
+        </section>
+
+
+    </main>
+
+    <footer class="footer footer-dark mt-5 bg-dark">
+        <div class="container py-3">
+            <div class="row align-items-center gy-2">
+
+                <div class="col-12 col-md-6">
+                    <div class="text-white fw-semibold">Bolsa de Empleo</div>
+                    <small class="text-white-50">Total Soft Inc.</small>
+                </div>
+
+                <div class="col-12 col-md-6 text-md-end">
+                    <div>
+                        <small class="text-white-50">Contactar: </small>
+                        <a class="text-white-50 text-decoration-none" href="mailto:info@ejemplo.com">
+                            info@ejemplo.com
+                        </a>
+                    </div>
+                    <small class="text-white-50">Cr&eacute;dito: Equipo de desarrollo</small>
+                </div>
+
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
