@@ -1,66 +1,48 @@
 package org.example.bolsa_empleo.entidades;
-import jakarta.persistence.*;//importa todos los comandos para crear las tablas automaticamente
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
 
-@Entity//indica que es una entidad JPA para mapear una tabla
-@Table(name = "empresa")// aca le pongo nombre a la tabla
+@Entity
+@Table(name = "empresa")
 public class Empresa {
 
-   @Id//indica que el siguiente atributo tendra una llave primaria
-   @GeneratedValue(strategy = GenerationType.IDENTITY)//significa que la BD se encarga de autoincrementar este valor
-   private Long idEmpresa; //long es mas seguro que int pero se podria usar int
-   private String nombreEmpresa;
-   private String correoEmpresa;
-   private String passwordEmpresa;
-   private String descripcionEmpresa;
-   private LocalDate fechaRegistroEmpresa;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long idEmpresa;
+    private String nombreEmpresa;
+    private String correoEmpresa;
+    private String passwordEmpresa;
+    private String descripcionEmpresa;
+    private String localizacion;
+    private String telefono;
+    private LocalDate fechaRegistroEmpresa;
+    private Boolean aprobada;
 
-    public Long getIdEmpresa() {
-        return idEmpresa;
-    }
+    public Long getIdEmpresa() { return idEmpresa; }
+    public void setIdEmpresa(Long idEmpresa) { this.idEmpresa = idEmpresa; }
 
-    public void setIdEmpresa(Long id_empresa) {
-        this.idEmpresa = id_empresa;
-    }
+    public String getNombreEmpresa() { return nombreEmpresa; }
+    public void setNombreEmpresa(String nombreEmpresa) { this.nombreEmpresa = nombreEmpresa; }
 
-    public String getNombreEmpresa() {
-        return nombreEmpresa;
-    }
+    public String getCorreoEmpresa() { return correoEmpresa; }
+    public void setCorreoEmpresa(String correoEmpresa) { this.correoEmpresa = correoEmpresa; }
 
-    public void setNombreEmpresa(String nombre_empresa) {
-        this.nombreEmpresa = nombre_empresa;
-    }
+    public String getPasswordEmpresa() { return passwordEmpresa; }
+    public void setPasswordEmpresa(String passwordEmpresa) { this.passwordEmpresa = passwordEmpresa; }
 
-    public String getCorreoEmpresa() {
-        return correoEmpresa;
-    }
+    public String getDescripcionEmpresa() { return descripcionEmpresa; }
+    public void setDescripcionEmpresa(String descripcionEmpresa) { this.descripcionEmpresa = descripcionEmpresa; }
 
-    public void setCorreoEmpresa(String correo_empresa) {
-        this.correoEmpresa = correo_empresa;
-    }
+    public String getLocalizacion() { return localizacion; }
+    public void setLocalizacion(String localizacion) { this.localizacion = localizacion; }
 
-    public String getPasswordEmpresa() {
-        return passwordEmpresa;
-    }
+    public String getTelefono() { return telefono; }
+    public void setTelefono(String telefono) { this.telefono = telefono; }
 
-    public void setPasswordEmpresa(String password_empresa) {
-        this.passwordEmpresa = password_empresa;
-    }
+    public LocalDate getFechaRegistroEmpresa() { return fechaRegistroEmpresa; }
+    public void setFechaRegistroEmpresa(LocalDate fechaRegistroEmpresa) { this.fechaRegistroEmpresa = fechaRegistroEmpresa; }
 
-    public String getDescripcionEmpresa() {
-        return descripcionEmpresa;
-    }
-
-    public void setDescripcionEmpresa(String descripcion_empresa) {
-        this.descripcionEmpresa = descripcion_empresa;
-    }
-
-    public LocalDate getFechaRegistroEmpresa() {
-        return fechaRegistroEmpresa;
-    }
-
-    public void setFechaRegistroEmpresa(LocalDate fecha_registro_empresa) {
-        this.fechaRegistroEmpresa = fecha_registro_empresa;
-    }
+    public Boolean getAprobada() { return aprobada; }
+    public void setAprobada(Boolean aprobada) { this.aprobada = aprobada; }
 }

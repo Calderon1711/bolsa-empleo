@@ -18,12 +18,15 @@ public class PuestoCaracteristica {
     @JoinColumn(name = "caracteristica_id", nullable = false)
     private Caracteristica caracteristica;
 
+    @Column(nullable = false)
+    private Integer nivelRequerido;
 
     public PuestoCaracteristica() {}
 
-    public PuestoCaracteristica(Puesto puesto, Caracteristica caracteristica) {
+    public PuestoCaracteristica(Puesto puesto, Caracteristica caracteristica, Integer nivelRequerido) {
         this.puesto = puesto;
         this.caracteristica = caracteristica;
+        this.nivelRequerido = nivelRequerido;
     }
 
     public Long getId() {
@@ -50,4 +53,7 @@ public class PuestoCaracteristica {
     public void setCaracteristica(Caracteristica caracteristica) {
         this.caracteristica = caracteristica;
     }
+
+    public Integer getNivelRequerido() { return nivelRequerido; }
+    public void setNivelRequerido(Integer nivelRequerido) { this.nivelRequerido = nivelRequerido; }
 }
