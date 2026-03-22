@@ -1,15 +1,12 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Buscar puestos por caracter&iacute;sticas</title>
-
+    <title>Buscar puestos por características</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/estilos.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
 </head>
 
 <body class="d-flex flex-column min-vh-100">
@@ -17,21 +14,21 @@
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container-fluid">
-                <a class="navbar-brand" href="Inicio.html">
-                    <img src="img/bolsaEmpleo.png" alt="BolsaEmpleo" width="70" height="70" class="d-inline-block align-text-top">
+                <a class="navbar-brand" th:href="@{/}">
+                    <img th:src="@{/img/bolsaEmpleo.png}" alt="BolsaEmpleo" width="70" height="70" class="d-inline-block align-text-top">
                 </a>
-                <a class="navbar-brand fw-semibold" href="Inicio.html">BOLSA DE EMPLEO</a>
+                <a class="navbar-brand fw-semibold" th:href="@{/}">BOLSA DE EMPLEO</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                     <div class="navbar-nav">
-                        <a class="nav-link" href="Buscar_Puestos.html">Buscar Puestos</a>
-                        <a class="nav-link" href="Empresa.html">Registro Empresa</a>
-                        <a class="nav-link" href="#">Registro Oferente</a>
+                        <a class="nav-link" th:href="@{/buscar-puestos}">Buscar Puestos</a>
+                        <a class="nav-link" th:href="@{/registro-empresa}">Registro Empresa</a>
+                        <a class="nav-link" th:href="@{/registro-oferente}">Registro Oferente</a>
                     </div>
                     <div class="navbar-nav ms-auto">
-                        <a class="nav-link" href="Login.html">Login</a>
+                        <a class="nav-link" th:href="@{/login}">Login</a>
                     </div>
                 </div>
             </div>
@@ -42,95 +39,110 @@
         <section class="row g-3">
             <article>
                 <div class="card">
-                    <h5 class="card-header">Buscar puestos por caracter&iacute;sticas</h5>
+                    <h5 class="card-header">Buscar puestos por características</h5>
                     <div class="card-body">
-                        <div class="p-3 bg-light border rounded">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="motores">
-                                <label class="form-check-label" for="motores">Motores</label>
-                            </div>
+                        <form th:action="@{/buscar-puestos}" method="post">
+                            <div class="p-3 bg-light border rounded">
 
-                            <div class="ms-4">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="mysql">
-                                    <label class="form-check-label" for="mysql">MySQL</label>
+                                <!-- Árbol de características cargado dinámicamente desde BD -->
+                                <div th:each="raiz : ${caracteristicasRaiz}">
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input" type="checkbox"
+                                               name="caracteristicaIds"
+                                               th:id="${'c' + raiz.id}"
+                                               th:value="${raiz.id}">
+                                        <label class="form-check-label fw-semibold"
+                                               th:for="${'c' + raiz.id}"
+                                               th:text="${raiz.nombre}">Categoría</label>
+                                    </div>
+
+                                    <!-- Hijos de nivel 2 -->
+                                    <div class="ms-4" th:if="${not #lists.isEmpty(raiz.hijos)}">
+                                        <div th:each="hijo : ${raiz.hijos}">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox"
+                                                       name="caracteristicaIds"
+                                                       th:id="${'c' + hijo.id}"
+                                                       th:value="${hijo.id}">
+                                                <label class="form-check-label"
+                                                       th:for="${'c' + hijo.id}"
+                                                       th:text="${hijo.nombre}">Subcategoría</label>
+                                            </div>
+
+                                            <!-- Hijos de nivel 3 -->
+                                            <div class="ms-4" th:if="${not #lists.isEmpty(hijo.hijos)}">
+                                                <div th:each="nieto : ${hijo.hijos}">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox"
+                                                               name="caracteristicaIds"
+                                                               th:id="${'c' + nieto.id}"
+                                                               th:value="${nieto.id}">
+                                                        <label class="form-check-label"
+                                                               th:for="${'c' + nieto.id}"
+                                                               th:text="${nieto.nombre}">Sub-subcategoría</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="oracle">
-                                    <label class="form-check-label" for="oracle">Oracle</label>
-                                </div>
+
+                                <p class="text-secondary small mt-3 mb-0"
+                                   th:if="${#lists.isEmpty(caracteristicasRaiz)}">
+                                    No hay características registradas aún.
+                                </p>
                             </div>
 
-                            <div class="form-check check mt-2">
-                                <input class="form-check-input" type="checkbox" id="ciberseguridad">
-                                <label class="form-check-label" for="ciberseguridad">Ciberseguridad</label>
+                            <div class="mt-3">
+                                <button type="submit" class="btn btn-primary me-2">Buscar</button>
+                                <a th:href="@{/buscar-puestos}" class="btn btn-outline-secondary">Limpiar</a>
                             </div>
-
-                            <div class="form-check check mt-2">
-                                <input class="form-check-input" type="checkbox" id="lenguajes">
-                                <label class="form-check-label" for="lenguajes">Lenguajes de programaci&oacute;n</label>
-                            </div>
-
-                            <div class="ms-4">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="c">
-                                    <label class="form-check-label" for="c">C#</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="java">
-                                    <label class="form-check-label" for="java">Java</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="kothin">
-                                    <label class="form-check-label" for="kothin">Kothin</label>
-                                </div>
-                            </div>
-
-                            <div class="form-check mt-2">
-                                <input class="form-check-input" type="checkbox" id="web">
-                                <label class="form-check-label" for="web">Tecnolog&iacute;as Web</label>
-                            </div>
-
-                        </div>
-
-                        <div class="mt-3">
-                            <button class="btn btn-primary me-2">Buscar</button>
-                            <button class="btn btn-outline-secondary">Limpiar</button>
-                        </div>
+                        </form>
                     </div>
                 </div>
             </article>
-            <h4 class="mt-4">Resultados</h4>
 
-            <div class="card shadow-sm" style="max-width: 360px;">
-                <div class="card-body">
-                    <small class="text-secondary">Web Soft</small>
-                    <h5 class="mb-1">Frontend Developer</h5>
-                    <p class="mb-0"><strong>Salario:</strong> 1200.0</p>
+            <!-- Resultados: solo se muestra si se hizo una búsqueda -->
+            <div th:if="${buscado}">
+                <h4 class="mt-2">Resultados</h4>
+
+                <div th:if="${#lists.isEmpty(resultados)}">
+                    <p class="text-secondary">No se encontraron puestos con las características seleccionadas.</p>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-12 col-md-6 col-lg-4" th:each="puesto : ${resultados}">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-body">
+                                <small class="text-secondary" th:text="${puesto.empresa.nombreEmpresa}">Empresa</small>
+                                <h5 class="mb-1" th:text="${puesto.titulo}">Título</h5>
+                                <p class="mb-0">
+                                    <strong>Salario:</strong>
+                                    $ <span th:text="${#numbers.formatDecimal(puesto.salario, 1, 'COMMA', 2, 'POINT')}">0.00</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+
         </section>
     </main>
 
     <footer class="footer footer-dark mt-5 bg-dark">
         <div class="container py-3">
             <div class="row align-items-center gy-2">
-
                 <div class="col-12 col-md-6">
                     <div class="text-white fw-semibold">Bolsa de Empleo</div>
                     <small class="text-white-50">Total Soft Inc.</small>
                 </div>
-
                 <div class="col-12 col-md-6 text-md-end">
                     <div>
                         <small class="text-white-50">Contactar: </small>
-                        <a class="text-white-50 text-decoration-none" href="mailto:info@ejemplo.com">
-                            info@ejemplo.com
-                        </a>
+                        <a class="text-white-50 text-decoration-none" href="mailto:info@ejemplo.com">info@ejemplo.com</a>
                     </div>
-                    <small class="text-white-50">Cr&eacute;dito: Equipo de desarrollo</small>
+                    <small class="text-white-50">Crédito: Equipo de desarrollo</small>
                 </div>
-
             </div>
         </div>
     </footer>

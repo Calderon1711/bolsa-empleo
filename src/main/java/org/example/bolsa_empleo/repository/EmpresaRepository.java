@@ -1,9 +1,14 @@
 package org.example.bolsa_empleo.repository;
 
 import org.example.bolsa_empleo.entidades.Empresa;
-import org.springframework.data.jpa.repository.JpaRepository;//importa la interfaz de spring data jpa(inclutye metiodos como guardar. buscarx id,etc)
-import org.springframework.stereotype.Repository;//esto le dice a spring que esta interfaz es un componente de acceso de datos
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
 
 @Repository
-public interface EmpresaRepository extends JpaRepository<Empresa, Long> { //define la interfaz que va manejar la tabla de empresa
+public interface EmpresaRepository extends JpaRepository<Empresa, Long> {
+
+    // Buscar empresa por correo (usado en login)
+    Optional<Empresa> findByCorreoEmpresa(String correoEmpresa);
 }
