@@ -1,9 +1,8 @@
 package org.example.bolsa_empleo.controller;
 
-import org.example.bolsa_empleo.entidades.Empresa;
-import org.example.bolsa_empleo.entidades.Puesto;
-import org.example.bolsa_empleo.entidades.PuestoCaracteristica;
-import org.example.bolsa_empleo.service.BusquedaService;
+import org.example.bolsa_empleo.entidades.*;
+import org.example.bolsa_empleo.service.*;
+import org.example.bolsa_empleo.service.LoginService;
 import org.example.bolsa_empleo.service.EmpresaService;
 import org.example.bolsa_empleo.service.PuestoService;
 import org.springframework.stereotype.Controller;
@@ -24,13 +23,15 @@ public class GeneralController {
     private final PuestoService puestoService;
     private final BusquedaService busquedaService;
     private final EmpresaService empresaService;
+    private final LoginService loginService;
 
     public GeneralController(PuestoService puestoService,
                              BusquedaService busquedaService,
-                             EmpresaService empresaService) {
+                             EmpresaService empresaService,LoginService loginService) {
         this.puestoService = puestoService;
         this.busquedaService = busquedaService;
         this.empresaService = empresaService;
+        this.loginService = loginService;
     }
 
     @GetMapping("/buscar-puestos")
@@ -68,8 +69,30 @@ public class GeneralController {
     }
 
     @GetMapping("/login")
-    public String login() {
+    public String mostrarLogin() {
         return "general/Login";
+    }
+
+    @PostMapping("/login")
+    public String procesarLogin(@RequestParam String correo,
+                                @RequestParam String password,
+                                Model model) {
+
+        Object usuario = loginService.validarLogin(correo, password);
+
+        if (usuario instanceof Administrador) {
+            return "redirect:/admin/dashboard";
+        }
+        else if (usuario instanceof Empresa) {
+            return "redirect:/empresa/dashboard";
+        }
+        else if (usuario instanceof Oferente) {
+            return "redirect:/oferente/dashboard";
+        }
+        else {
+            model.addAttribute("error", "Correo o contraseña incorrectos");
+            return "general/Login";
+        }
     }
 
     @GetMapping("/")

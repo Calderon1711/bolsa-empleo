@@ -9,7 +9,7 @@ public class
 Empresa {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(length = 20)
     private Long idEmpresa;
     private String nombreEmpresa;
     private String correoEmpresa;
