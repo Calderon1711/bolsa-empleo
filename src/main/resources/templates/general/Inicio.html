@@ -1,5 +1,5 @@
-<!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+﻿<!DOCTYPE html>
+<html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -7,88 +7,169 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
 </head>
 
 <body class="d-flex flex-column min-vh-100">
 
+    <!-- ======================================================================================================================================================================== -->
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container-fluid">
-                <a class="navbar-brand" th:href="@{/}">
-                    <img th:src="@{/img/bolsaEmpleo.png}" alt="BolsaEmpleo" width="70" height="70" class="d-inline-block align-text-top">
+                <a class="navbar-brand" href="Inicio.html">
+                    <img src="img/bolsaEmpleo.png" alt="BolsaEmpleo" width="70" height="70" class="d-inline-block align-text-top">
                 </a>
-                <a class="navbar-brand fw-semibold" th:href="@{/}">BOLSA DE EMPLEO</a>
+                <a class="navbar-brand fw-semibold" href="Inicio.html">BOLSA DE EMPLEO</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                     <div class="navbar-nav">
-                        <a class="nav-link" th:href="@{/buscar-puestos}">Buscar Puestos</a>
-                        <a class="nav-link" th:href="@{/registro-empresa}">Registro Empresa</a>
-                        <a class="nav-link" th:href="@{/registro-oferente}">Registro Oferente</a>
+                        <a class="nav-link" href="Buscar_Puestos.html">Buscar Puestos</a>
+                        <a class="nav-link" href="Empresa.html">Registro Empresa</a>
+                        <a class="nav-link" href="#">Registro Oferente</a>
                     </div>
                     <div class="navbar-nav ms-auto">
-                        <a class="nav-link" th:href="@{/login}">Login</a>
+                        <a class="nav-link" href="Login.html">Login</a>
                     </div>
                 </div>
             </div>
         </nav>
     </header>
-
+    <!-- ======================================================================================================================================================================== -->
     <main class="container py-4 flex-grow-1">
         <h1 class="h4 mb-3">Bolsa De Empleo</h1>
-        <h3 class="text-secondary small mb-2">Últimos 5 puestos públicos</h3>
-
+        <h3 class="text-secondary small mb-2">&Uacute;ltimos 5 puestos p&uacute;blicos</h3>
         <section class="row g-3">
-            <article class="col-12 col-md-6 col-lg-4" th:each="puesto : ${puestos}">
+            <article class="col-12 col-md-6 col-lg-4">
                 <div class="card h-100 border-10 shadow-sm bg-light">
-                    <div class="card-body">
-                        <h3 class="h6 mb-1" th:text="${puesto.empresa.nombreEmpresa}">Empresa</h3>
-                        <p class="text-secondary small mb-2" th:text="${puesto.titulo}">Título del puesto</p>
-                        <p class="fw-semibold mb-3">
-                            $ <span th:text="${#numbers.formatDecimal(puesto.salario, 1, 'COMMA', 2, 'POINT')}">0.00</span>
-                        </p>
+                    <div class="card-body" style="background-color: #eaf6e8">
+                        <h3 class="h6 mb-1">SoftLab</h3>
+                        <p class="text-secondary small mb-2">Unity game developer</p>
+                        <p class="fw-semibold mb-3">₡ 1.300.00</p>
                         <button type="button"
                                 class="btn btn-outline-primary w-100"
                                 data-bs-toggle="popover"
                                 data-bs-trigger="hover focus"
                                 data-bs-placement="bottom"
                                 data-bs-html="true"
-                                th:attr="data-bs-title=${puesto.titulo},data-bs-content=${popoverContent.get(puesto.id)}">
-                            Ver Detalle
+                                data-bs-title="Frontend developer"
+                                data-bs-content="
+                            <ul class='mb-0 ps-3'>
+                               <li>Tecnologías Web (nivel 3)</li>
+                               <li>Testing / JUnit / Assertions (nivel 4)</li>
+                            </ul>
+                           ">
+                          Ver Detalle
                         </button>
                     </div>
                 </div>
             </article>
 
-            <div class="col-12" th:if="${#lists.isEmpty(puestos)}">
-                <p class="text-secondary">No hay puestos públicos disponibles por el momento.</p>
-            </div>
+            <article class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100 border-10 shadow-sm bg-light">
+                    <div class="card-body" style="background-color: #eaf6e8">
+                        <h3 class="h6 mb-1">SoftLab</h3>
+                        <p class="text-secondary small mb-2">Embeded software developer</p>
+                        <p class="fw-semibold mb-3">₡ 1.500.00</p>
+                        <button type="button"
+                                class="btn btn-outline-primary w-100"
+                                data-bs-toggle="popover"
+                                data-bs-trigger="hover focus"
+                                data-bs-placement="bottom"
+                                data-bs-html="true"
+                                data-bs-title="Frontend developer"
+                                data-bs-content="
+                            <ul class='mb-0 ps-3'>
+                               <li>Tecnologías Web (nivel 3)</li>
+                               <li>Testing / JUnit / Assertions (nivel 4)</li>
+                            </ul>
+                           ">
+                          Ver Detalle
+                        </button>
+                    </div>
+                </div>
+            </article>
+
+            <article class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100 border-10 shadow-sm bg-light">
+                    <div class="card-body" style="background-color: #eaf6e8">
+                        <h3 class="h6 mb-1">Web Soft</h3>
+                        <p class="text-secondary small mb-2">Full stack developer</p>
+                        <p class="fw-semibold mb-3">₡ 2.000.00</p>
+                        <button type="button"
+                                class="btn btn-outline-primary w-100"
+                                data-bs-toggle="popover"
+                                data-bs-trigger="hover focus"
+                                data-bs-placement="bottom"
+                                data-bs-html="true"
+                                data-bs-title="Frontend developer"
+                                data-bs-content="
+                            <ul class='mb-0 ps-3'>
+                               <li>Tecnologías Web (nivel 3)</li>
+                               <li>Testing / JUnit / Assertions (nivel 4)</li>
+                            </ul>
+                           ">
+                          Ver Detalle
+                        </button>
+                    </div>
+                </div>
+            </article>
+
+            <article class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100 border-10 shadow-sm bg-light">
+                    <div class="card-body" style="background-color: #eaf6e8">
+                        <h3 class="h6 mb-1">Web Soft</h3>
+                        <p class="text-secondary small mb-2">Frontend developer</p>
+                        <p class="fw-semibold mb-3">₡ 1.200.00</p>
+                        <button type="button"
+                                class="btn btn-outline-primary w-100"
+                                data-bs-toggle="popover"
+                                data-bs-trigger="hover focus"
+                                data-bs-placement="bottom"
+                                data-bs-html="true"
+                                data-bs-title="Frontend developer"
+                                data-bs-content="
+                            <ul class='mb-0 ps-3'>
+                               <li>Tecnologías Web (nivel 3)</li>
+                               <li>Testing / JUnit / Assertions (nivel 4)</li>
+                            </ul>
+                           ">
+                          Ver Detalle
+                        </button>
+                    </div>
+                </div>
+            </article>
         </section>
     </main>
-
+    <!-- ======================================================================================================================================================================== -->
     <footer class="footer footer-dark mt-5 bg-dark">
         <div class="container py-3">
             <div class="row align-items-center gy-2">
+
                 <div class="col-12 col-md-6">
                     <div class="text-white fw-semibold">Bolsa de Empleo</div>
                     <small class="text-white-50">Total Soft Inc.</small>
                 </div>
+
                 <div class="col-12 col-md-6 text-md-end">
                     <div>
                         <small class="text-white-50">Contactar: </small>
-                        <a class="text-white-50 text-decoration-none" href="mailto:info@ejemplo.com">info@ejemplo.com</a>
+                        <a class="text-white-50 text-decoration-none" href="mailto:info@ejemplo.com">
+                            info@ejemplo.com
+                        </a>
                     </div>
-                    <small class="text-white-50">Crédito: Equipo de desarrollo</small>
+                    <small class="text-white-50">Cr&eacute;dito: Equipo de desarrollo</small>
                 </div>
+
             </div>
         </div>
     </footer>
-
+    <!-- ======================================================================================================================================================================== -->
     <script>
         document.querySelectorAll('[data-bs-toggle="popover"]').forEach(el => {
             new bootstrap.Popover(el);
         });
     </script>
-</body>
-</html>
+    </>
+    </hmtl>

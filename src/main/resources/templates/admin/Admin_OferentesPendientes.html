@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Admin - Oferentes pendientes</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"></head>
+<body>
+<div class="container py-4">
+    <h4>Oferentes pendientes</h4>
+    <div th:if="${exitoso}" class="alert alert-success" th:text="${exitoso}"></div>
+    <table class="table table-sm table-bordered">
+        <thead><tr><th>Cédula</th><th>Nombre</th><th>Correo</th><th></th></tr></thead>
+        <tbody>
+        <tr th:each="oferente : ${oferentes}">
+            <td th:text="${oferente.cedulaOferente}"></td>
+            <td th:text="${oferente.nombreOferente + ' ' + oferente.primerApellido}"></td>
+            <td th:text="${oferente.correoOferente}"></td>
+            <td>
+                <form method="post" th:action="@{/admin/oferentes/{cedula}/aprobar(cedula=${oferente.cedulaOferente})}">
+                    <button class="btn btn-success btn-sm" type="submit">Aprobar</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

@@ -11,4 +11,5 @@ public interface CaracteristicaRepository extends JpaRepository<Caracteristica, 
 
     // Características raíz (sin padre) — punto de entrada del árbol
     List<Caracteristica> findByPadreIsNull();
+    List<Caracteristica> findByPadreIdOrderByNombreAsc(Long padreId);
 }
