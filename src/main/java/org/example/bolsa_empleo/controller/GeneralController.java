@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jakarta.servlet.http.HttpSession;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +54,7 @@ public class GeneralController {
     @GetMapping("/registro-empresa")
     public String registroEmpresa(Model model) {
         model.addAttribute("empresa", new Empresa());
-        return "empresa/Empresa";
+        return "empresa/Empresa_Registro";
     }
 
     @PostMapping("/registro-empresa")
@@ -62,6 +63,7 @@ public class GeneralController {
         ra.addFlashAttribute("exitoso", true);
         return "redirect:/registro-empresa";
     }
+
 
     @GetMapping("/registro-oferente")
     public String registroOferente() {
@@ -76,20 +78,21 @@ public class GeneralController {
     @PostMapping("/login")
     public String procesarLogin(@RequestParam String correo,
                                 @RequestParam String password,
+                                HttpSession session,
                                 Model model) {
 
         Object usuario = loginService.validarLogin(correo, password);
 
-        if (usuario instanceof Administrador) {
+        if (usuario instanceof Administrador admin) {
+            session.setAttribute("adminLogueado", admin);
             return "redirect:/admin/dashboard";
-        }
-        else if (usuario instanceof Empresa) {
+        } else if (usuario instanceof Empresa empresa) {
+            session.setAttribute("empresaLogueada", empresa);
             return "redirect:/empresa/dashboard";
-        }
-        else if (usuario instanceof Oferente) {
+        } else if (usuario instanceof Oferente oferente) {
+            session.setAttribute("oferenteLogueado", oferente);
             return "redirect:/oferente/dashboard";
-        }
-        else {
+        } else {
             model.addAttribute("error", "Correo o contraseña incorrectos");
             return "general/Login";
         }

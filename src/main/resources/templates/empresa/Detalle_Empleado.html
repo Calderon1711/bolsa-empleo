@@ -4,12 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Empresa - Detalle candidato</title>
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/estilos.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
 </head>
 
 <body class="d-flex flex-column min-vh-100">
@@ -31,7 +28,7 @@
                         <a class="nav-link" th:href="@{/empresa/puestos/publicar}">Publicar puesto</a>
                     </div>
                     <div class="navbar-nav ms-auto">
-                        <a class="nav-link" th:href="@{/login}">Login</a>
+                        <a class="btn btn-outline-light btn-sm" th:href="@{/login}">Salir</a>
                     </div>
                 </div>
             </div>
@@ -39,91 +36,77 @@
     </header>
 
     <main class="container py-4 flex-grow-1">
-        <div class="mb-3">
-            <h4>Detalle de oferente</h4>
+        <h4 class="mb-3">Detalle de oferente</h4>
+
+        <div th:if="${oferente == null}" class="alert alert-warning">
+            No se encontró el oferente solicitado.
         </div>
 
-        <section class="row g-3">
-            <article class="col-12">
-                <div class="card">
-                    <div class="card-body">
-                        <figure>
-                            <blockquote class="blockquote">
-                                <p>Jose Sanchez</p>
-                            </blockquote>
-                            <figcaption>
-                                <p><span class="fw-bold">Identificaci&oacute;n: </span>123456</p>
-                                <p><span class="fw-bold">Email: </span>jsanchez@sanchez.com</p>
-                                <p><span class="fw-bold">Tel&eacute;fono: </span>45356677</p>
-                                <p><span class="fw-bold">Residencia: </span>San Jose</p>
-                            </figcaption>
-                        </figure>
-                    </div>
+        <div th:unless="${oferente == null}">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title"
+                        th:text="${oferente.nombreOferente + ' ' + oferente.primerApellido}"></h5>
+                    <p class="mb-1">
+                        <span class="fw-bold">Identificación: </span>
+                        <span th:text="${oferente.cedulaOferente}"></span>
+                    </p>
+                    <p class="mb-1">
+                        <span class="fw-bold">Email: </span>
+                        <span th:text="${oferente.correoOferente}"></span>
+                    </p>
+                    <p class="mb-1">
+                        <span class="fw-bold">Teléfono: </span>
+                        <span th:text="${oferente.telefonoOferente}"></span>
+                    </p>
+                    <p class="mb-0">
+                        <span class="fw-bold">Residencia: </span>
+                        <span th:text="${oferente.lugarResidencia}"></span>
+                    </p>
                 </div>
-            </article>
+            </div>
 
-            <h4>Habilidades</h4>
+            <h5 class="mb-3">Habilidades</h5>
 
-            <article>
-                <div>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th scope="col">Caracter&iacute;stica</th>
-                                <th scope="col">Nivel</th>
-                            </tr>
-                        </thead>
-                        <tbody class="table-group-divider">
-                            <tr>
-                                <th scope="row">Lenguajes de programaci&oacute;n</th>
-                                <td>4</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Java</th>
-                                <td>5</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Tenolog&iacute;as Web</th>
-                                <td>4</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Modelado</th>
-                                <td>5</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Assertions</th>
-                                <td>3</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <a href="Empresa_Candidatos.html" class="btn btn-outline-primary btn-md">Volver</a>
-                </div>
-            </article>
-        </section>
+            <div th:if="${#lists.isEmpty(habilidades)}" class="text-secondary">
+                Este oferente no tiene habilidades registradas.
+            </div>
 
+            <table class="table" th:unless="${#lists.isEmpty(habilidades)}">
+                <thead>
+                    <tr>
+                        <th scope="col">Característica</th>
+                        <th scope="col">Nivel</th>
+                    </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                    <tr th:each="h : ${habilidades}">
+                        <td th:text="${h.caracteristica.nombre}"></td>
+                        <td th:text="${h.nivel}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
+        <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm mt-2">Volver</a>
     </main>
 
     <footer class="footer footer-dark mt-5 bg-dark">
         <div class="container py-3">
             <div class="row align-items-center gy-2">
-
                 <div class="col-12 col-md-6">
                     <div class="text-white fw-semibold">Bolsa de Empleo</div>
                     <small class="text-white-50">Total Soft Inc.</small>
                 </div>
-
                 <div class="col-12 col-md-6 text-md-end">
                     <div>
                         <small class="text-white-50">Contactar: </small>
-                        <a class="text-white-50 text-decoration-none" href="mailto:info@ejemplo.com">
-                            info@ejemplo.com
-                        </a>
+                        <a class="text-white-50 text-decoration-none" href="mailto:info@ejemplo.com">info@ejemplo.com</a>
                     </div>
-                    <small class="text-white-50">Cr&eacute;dito: Equipo de desarrollo</small>
+                    <small class="text-white-50">Crédito: Equipo de desarrollo</small>
                 </div>
-
             </div>
         </div>
     </footer>
 </body>
+</html>

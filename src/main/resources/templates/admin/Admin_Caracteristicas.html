@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,23 +17,23 @@
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container-fluid">
-                <a class="navbar-brand" href="Inicio.html">
-                    <img src="img/bolsaEmpleo.png" alt="BolsaEmpleo" width="70" height="70" class="d-inline-block align-text-top">
+                <a class="navbar-brand" th:href="@{/}">
+                    <img th:src="@{/img/bolsaEmpleo.png}" alt="BolsaEmpleo" width="70" height="70" class="d-inline-block align-text-top">
                 </a>
-                <a class="navbar-brand fw-semibold" href="Inicio.html">BOLSA DE EMPLEO</a>
+                <a class="navbar-brand fw-semibold" th:href="@{/}">BOLSA DE EMPLEO</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                     <div class="navbar-nav">
-                        <a class="nav-link" href="Admin.html">Dashboard</a>
-                        <a class="nav-link" href="Admin_EmpresasPendientes.html">Empresas pendientes</a>
-                        <a class="nav-link" href="#">Oferentes pendientes</a>
-                        <a class="nav-link" href="Admin_Caracteristicas.html">Caracter&iacute;sticas</a>
-                        <a class="nav-link" href="#">Reportes</a>
+                        <a class="nav-link" th:href="@{/admin/dashboard}">Dashboard</a>
+                        <a class="nav-link" th:href="@{/admin/empresas-pendientes}">Empresas pendientes</a>
+                        <a class="nav-link" th:href="@{/admin/oferentes-pendientes}">Oferentes pendientes</a>
+                        <a class="nav-link active" th:href="@{/admin/caracteristicas}">Características</a>
+                        <a class="nav-link" th:href="@{/admin/reporte/pdf}">Reportes</a>
                     </div>
                     <div class="navbar-nav ms-auto">
-                        <a class="nav-link" href="Login.html">Login</a>
+                        <a class="btn btn-outline-light btn-sm" th:href="@{/login}">Salir</a>
                     </div>
                 </div>
             </div>
