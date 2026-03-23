@@ -27,4 +27,6 @@ public interface PuestoRepository extends JpaRepository<Puesto, Long> {
 
     // Buscar por correo de la empresa dueña (usado en login para verificar pertenencia)
     Optional<Puesto> findByIdAndEmpresaIdEmpresa(Long id, Long idEmpresa);
+
+    List<Puesto> findByTipoPublicacionAndEstadoOrderByFechaRegistroDesc(String publica, boolean estado);
 }

@@ -75,7 +75,7 @@ public class OferenteController {
     public String postulaciones(@RequestParam String cedula, Model model) {
         model.addAttribute("cedula", cedula);
         model.addAttribute("postulaciones", oferenteService.listarPostulaciones(cedula));
-        model.addAttribute("puestos", oferenteService.listarPuestosPublicos());
+        model.addAttribute("puestos", oferenteService.listarPuestosPublicos(cedula));
         return "oferente/Oferente_Postulaciones";
     }
 

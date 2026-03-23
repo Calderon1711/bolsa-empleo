@@ -5,10 +5,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface OferenteCaracteristicaRepository extends JpaRepository<OferenteCaracteristica, Long> {
 
-    // Todas las habilidades de un oferente específico
     List<OferenteCaracteristica> findByOferenteCedulaOferente(String cedulaOferente);
+
+    Optional<OferenteCaracteristica> findByOferenteCedulaOferenteAndCaracteristicaId(String cedulaOferente, Long caracteristicaId);
 }

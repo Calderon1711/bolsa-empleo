@@ -4,171 +4,156 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Oferente - Habilidades</title>
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/estilos.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
 </head>
-
 <body class="d-flex flex-column min-vh-100">
 
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <div class="container-fluid">
-                <a class="navbar-brand" th:href="@{/}">
-                    <img th:src="@{/img/bolsaEmpleo.png}" alt="BolsaEmpleo" width="70" height="70" class="d-inline-block align-text-top">
-                </a>
-                <a class="navbar-brand fw-semibold" th:href="@{/}">BOLSA DE EMPLEO</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-                    <div class="navbar-nav">
-                        <a class="nav-link" th:href="@{/oferente/dashboard}">Dashboard</a>
-                        <a class="nav-link active" th:href="@{/oferente/habilidades}">Mis habilidades</a>
-                        <a class="nav-link" th:href="@{/oferente/cv}">Mi CV</a>
-                    </div>
-                    <div class="navbar-nav ms-auto">
-                        <a class="btn btn-outline-light btn-sm" th:href="@{/login}">Salir</a>
-                    </div>
+<header>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-semibold" th:href="@{/}">BOLSA DE EMPLEO</a>
+            <div class="navbar-nav">
+                <a class="nav-link" th:href="@{/oferente/dashboard(cedula=${cedula})}">Dashboard</a>
+                <a class="nav-link active" th:href="@{/oferente/habilidades(cedula=${cedula})}">Mis habilidades</a>
+                <a class="nav-link" th:href="@{/oferente/postulaciones(cedula=${cedula})}">Postulaciones</a>
+                <a class="nav-link" th:href="@{/oferente/cv(cedula=${cedula})}">Mi CV</a>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<main class="container py-4 flex-grow-1">
+    <h4 class="mb-3">Mis habilidades</h4>
+
+    <div th:if="${exitoso}" class="alert alert-success" th:text="${exitoso}"></div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <div class="row g-4">
+        <div class="col-lg-5">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5>Habilidades registradas</h5>
+                    <table class="table table-sm">
+                        <thead>
+                        <tr>
+                            <th>Característica</th>
+                            <th>Nivel</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="habilidad : ${habilidades}">
+                            <td th:text="${habilidad.caracteristica.nombre}"></td>
+                            <td th:text="${habilidad.nivel}"></td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(habilidades)}">
+                            <td colspan="2" class="text-secondary">No has agregado habilidades todavía.</td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        </nav>
-    </header>
-
-    <main class="container py-4 flex-grow-1">
-        <div class="mb-3">
-            <h4>Mis habilidades</h4>
         </div>
 
-        <section class="row g-3">
-            <article class="col-12">
-                    <div class="card-group card h-100 border-10 shadow-sm bg-light">
-                        <div class="card" style="background-color: #eaf6e8">
-                            <div class="card-body">
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Caracter&iacute;stica</th>
-                                            <th scope="col">Nivel</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="table-group-divider">
-                                        <tr>
-                                            <th scope="row">Lenguajes de programaci&oacute;n</th>
-                                            <td>4</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Lenguajes de programaci&oacute;n / Java</th>
-                                            <td>5</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Tenolog&iacute;as Web</th>
-                                            <td>4</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Bases de datos / Modelado</th>
-                                            <td>5</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Testing / Junit/ Assertions</th>
-                                            <td>3</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="card" style="background-color: #eaf6e8">
-                            <div class="card-body">
-                                <h5 class="card-title">Ruta</h5>
-                                <nav aria-label="breadcrumb">
-                                    <ol class="breadcrumb">
-                                        <li class="breadcrumb-item">
-                                            <a href="#" class="btn btn-outline-primary btn-sm">Ra&iacute;ces</a>
-                                        </li>
-                                        <li class="breadcrumb-item">
-                                            <a href="#" class="btn btn-outline-primary btn-sm">Testing</a>
-                                        </li>
-                                        <li class="breadcrumb-item">
-                                            <a href="#" class="btn btn-outline-primary btn-sm">Junit</a>
-                                        </li>
-                                    </ol>
-                                </nav>
-                                <h6 class="text-secondary small">Subcategor&iacute;as de: <span class="fw-bold">Junit</span></h6>
-                                <div class="card shadow-sm" style="max-width: 350px;">
-                                    <div class="list-group list-group-flush">
-                                        <div class="list-group-item d-flex justify-content-between align-items-center">
-                                            <span class="fw-semibold">Assertions</span>
-                                            <a href="#" class="btn btn-outline-primary btn-sm">Entrar</a>
-                                        </div>
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5>Ruta</h5>
 
-                                        <div class="list-group-item d-flex justify-content-between align-items-center">
-                                            <span class="fw-semibold">Test cases</span>
-                                            <a href="#" class="btn btn-outline-primary btn-sm">Entrar</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card" style="background-color: #eaf6e8">
-                            <div class="card-body">
-                                <div class="card shadow-sm" style="max-width: 350px;">
-                                    <div class="card-body">
-                                        <h5 class="card-title fw-bold">Agregar Habilidad</h5>
-
-                                        <form>
-                                            <div class="mb-3">
-                                                <label for="caracteristica" class="form-label">Caracter&iacute;stica</label>
-                                                <select class="form-select" id="caracteristica" name="caracteristica">
-                                                    <option value="testcases" selected>Test cases</option>
-                                                    <option value="assertions">Assertions</option>
-                                                    <option value="junit">Junit</option>
-                                                </select>
-                                            </div>
-
-                                            <div class="mb-3">
-                                                <label for="nivel" class="form-label">Nivel (1-5)</label>
-                                                <input type="number" class="form-control" id="nivel" name="nivel" min="1" max="5" value="4">
-                                            </div>
-
-                                            <div class="d-grid">
-                                                <button type="submit" class="btn btn-primary">Agregar</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-            </article>
-        </section>
-
-
-    </main>
-
-    <footer class="footer footer-dark mt-5 bg-dark">
-        <div class="container py-3">
-            <div class="row align-items-center gy-2">
-
-                <div class="col-12 col-md-6">
-                    <div class="text-white fw-semibold">Bolsa de Empleo</div>
-                    <small class="text-white-50">Total Soft Inc.</small>
-                </div>
-
-                <div class="col-12 col-md-6 text-md-end">
-                    <div>
-                        <small class="text-white-50">Contactar: </small>
-                        <a class="text-white-50 text-decoration-none" href="mailto:info@ejemplo.com">
-                            info@ejemplo.com
+                    <nav class="mb-3">
+                        <a class="btn btn-outline-secondary btn-sm me-1"
+                           th:href="@{/oferente/habilidades(cedula=${cedula})}">
+                            Raíces
                         </a>
-                    </div>
-                    <small class="text-white-50">Cr&eacute;dito: Equipo de desarrollo</small>
-                </div>
 
+                        <span th:each="item : ${ruta}">
+                            <span class="mx-1">/</span>
+                            <a class="btn btn-outline-primary btn-sm"
+                               th:href="@{/oferente/habilidades(cedula=${cedula}, padreId=${item.id})}"
+                               th:text="${item.nombre}"></a>
+                        </span>
+                    </nav>
+
+                    <p class="text-secondary">
+                        Viendo:
+                        <strong th:text="${actual != null ? actual.nombre : 'Raíces'}"></strong>
+                    </p>
+
+                    <div class="list-group">
+                        <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                           th:each="sub : ${subcategorias}"
+                           th:href="@{/oferente/habilidades(cedula=${cedula}, padreId=${sub.id})}">
+                            <span th:text="${sub.nombre}"></span>
+                            <span class="badge text-bg-primary">Entrar</span>
+                        </a>
+
+                        <div class="list-group-item text-secondary" th:if="${#lists.isEmpty(subcategorias)}">
+                            No hay subcategorías disponibles.
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </footer>
+
+        <div class="col-lg-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5>Agregar habilidad</h5>
+
+                    <form method="post" th:action="@{/oferente/habilidades/agregar}">
+                        <input type="hidden" name="cedula" th:value="${cedula}"/>
+
+                        <div class="mb-3">
+                            <label class="form-label">Característica</label>
+                            <select class="form-select" name="caracteristicaId" required>
+                                <option value="">Seleccione una característica</option>
+
+                                <option th:each="item : ${subcategorias}"
+                                        th:value="${item.id}"
+                                        th:text="${item.nombre}">
+                                </option>
+
+                                <option th:if="${#lists.isEmpty(subcategorias)}"
+                                        th:each="item : ${caracteristicasRaiz}"
+                                        th:value="${item.id}"
+                                        th:text="${item.nombre}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Nivel</label>
+                            <input type="number" class="form-control" name="nivel" min="1" max="5" required>
+                        </div>
+
+                        <button class="btn btn-primary w-100" type="submit">Agregar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer class="footer footer-dark mt-5 bg-dark">
+    <div class="container py-3">
+        <div class="row align-items-center gy-2">
+
+            <div class="col-12 col-md-6">
+                <div class="text-white fw-semibold">Bolsa de Empleo</div>
+                <small class="text-white-50">Total Soft Inc.</small>
+            </div>
+
+            <div class="col-12 col-md-6 text-md-end">
+                <div>
+                    <small class="text-white-50">Contactar: </small>
+                    <a class="text-white-50 text-decoration-none" href="mailto:info@ejemplo.com">
+                        info@ejemplo.com
+                    </a>
+                </div>
+                <small class="text-white-50">Cr&eacute;dito: Equipo de desarrollo</small>
+            </div>
+
+        </div>
+    </div>
+</footer>
 </body>
 </html>
