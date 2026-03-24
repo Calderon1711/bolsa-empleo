@@ -1,10 +1,8 @@
 package org.example.bolsa_empleo.controller;
 
 import org.example.bolsa_empleo.entidades.*;
+import org.example.bolsa_empleo.repository.NacionalidadRepository;
 import org.example.bolsa_empleo.service.*;
-import org.example.bolsa_empleo.service.LoginService;
-import org.example.bolsa_empleo.service.EmpresaService;
-import org.example.bolsa_empleo.service.PuestoService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,14 +23,44 @@ public class GeneralController {
     private final BusquedaService busquedaService;
     private final EmpresaService empresaService;
     private final LoginService loginService;
+    private final OferenteService oferenteService;
+    private final NacionalidadRepository nacionalidadRepository;
 
     public GeneralController(PuestoService puestoService,
                              BusquedaService busquedaService,
-                             EmpresaService empresaService,LoginService loginService) {
+                             EmpresaService empresaService,
+                             LoginService loginService,
+                             OferenteService oferenteService,
+                             NacionalidadRepository nacionalidadRepository) {
         this.puestoService = puestoService;
         this.busquedaService = busquedaService;
         this.empresaService = empresaService;
         this.loginService = loginService;
+        this.oferenteService = oferenteService;
+        this.nacionalidadRepository = nacionalidadRepository;
+    }
+
+    @GetMapping("/")
+    public String inicio(Model model) {
+        List<Puesto> puestos = puestoService.obtenerUltimosCincoPuestosPublicos();
+
+        Map<Long, String> popoverContent = new LinkedHashMap<>();
+        for (Puesto p : puestos) {
+            List<PuestoCaracteristica> chars = puestoService.obtenerCaracteristicasDePuesto(p.getId());
+            StringBuilder sb = new StringBuilder("<ul class='mb-0 ps-3'>");
+            for (PuestoCaracteristica pc : chars) {
+                sb.append("<li>")
+                        .append(pc.getCaracteristica().getNombre())
+                        .append(" (nivel ").append(pc.getNivelRequerido()).append(")")
+                        .append("</li>");
+            }
+            sb.append("</ul>");
+            popoverContent.put(p.getId(), sb.toString());
+        }
+
+        model.addAttribute("puestos", puestos);
+        model.addAttribute("popoverContent", popoverContent);
+        return "general/Inicio";
     }
 
     @GetMapping("/buscar-puestos")
@@ -64,10 +92,20 @@ public class GeneralController {
         return "redirect:/registro-empresa";
     }
 
-
     @GetMapping("/registro-oferente")
-    public String registroOferente() {
-        return "oferente/Oferente";
+    public String registroOferente(Model model) {
+        model.addAttribute("oferente", new Oferente());
+        model.addAttribute("nacionalidades", nacionalidadRepository.findAll());
+        return "oferente/Oferente_Registro";
+    }
+
+    @PostMapping("/registro-oferente")
+    public String registrarOferente(@ModelAttribute Oferente oferente, @RequestParam Long idNacionalidad, RedirectAttributes ra) {
+        Nacionalidad nacionalidad = nacionalidadRepository.findById(idNacionalidad).orElse(null);
+        oferente.setNacionalidad(nacionalidad);
+        oferenteService.registrarOferente(oferente);
+        ra.addFlashAttribute("exitoso", true);
+        return "redirect:/registro-oferente";
     }
 
     @GetMapping("/login")
@@ -98,27 +136,9 @@ public class GeneralController {
         }
     }
 
-    @GetMapping("/")
-    public String inicio(Model model) {
-        List<Puesto> puestos = puestoService.obtenerUltimosCincoPuestosPublicos();
-
-        // Construye el contenido HTML del popover para cada puesto (se hace aquí porque es lógica de presentación)
-        Map<Long, String> popoverContent = new LinkedHashMap<>();
-        for (Puesto p : puestos) {
-            List<PuestoCaracteristica> chars = puestoService.obtenerCaracteristicasDePuesto(p.getId());
-            StringBuilder sb = new StringBuilder("<ul class='mb-0 ps-3'>");
-            for (PuestoCaracteristica pc : chars) {
-                sb.append("<li>")
-                  .append(pc.getCaracteristica().getNombre())
-                  .append(" (nivel ").append(pc.getNivelRequerido()).append(")")
-                  .append("</li>");
-            }
-            sb.append("</ul>");
-            popoverContent.put(p.getId(), sb.toString());
-        }
-
-        model.addAttribute("puestos", puestos);
-        model.addAttribute("popoverContent", popoverContent);
-        return "general/Inicio";
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/login";
     }
 }

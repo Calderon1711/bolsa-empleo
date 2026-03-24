@@ -169,4 +169,13 @@ public class OferenteService {
                 .filter(ruta -> !ruta.isBlank())
                 .map(Paths::get);
     }
+
+    public Oferente registrarOferente(Oferente oferente) {
+        if (oferenteRepository.existsById(oferente.getCedulaOferente())) {
+            throw new IllegalArgumentException("Ya existe un oferente con esa cédula");
+        }
+
+        oferente.setAprobado(false);
+        return oferenteRepository.save(oferente);
+    }
 }

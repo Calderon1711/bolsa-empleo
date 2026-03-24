@@ -16,9 +16,9 @@ public class Nacionalidad {
         this.nombreNacionalidad = nombre;
     }
 
-    public Long getId_Nacionalidad() {return idNacionalidad;}
-    public String getNombre_Nacionalidad() {return nombreNacionalidad;}
-    public void setId_Nacionalidad(long id) {this.idNacionalidad = id;}
-    public void setNombre_Nacionalidad(String nombre) {this.nombreNacionalidad = nombre;}
+    public Long getIdNacionalidad() { return idNacionalidad; }
+    public String getNombreNacionalidad() { return nombreNacionalidad; }
+    public void setIdNacionalidad(Long idNacionalidad) { this.idNacionalidad = idNacionalidad; }
+    public void setNombreNacionalidad(String nombreNacionalidad) { this.nombreNacionalidad = nombreNacionalidad; }
 
 }
