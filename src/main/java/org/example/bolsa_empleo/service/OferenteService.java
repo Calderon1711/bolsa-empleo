@@ -3,6 +3,7 @@ package org.example.bolsa_empleo.service;
 import org.example.bolsa_empleo.entidades.*;
 import org.example.bolsa_empleo.repository.*;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,6 +25,7 @@ public class OferenteService {
     private final PuestoRepository puestoRepository;
     private final PostulacionRepository postulacionRepository;
     private final CvRepository cvRepository;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Value("${app.cv.upload-dir:src/main/resources/static/uploads/cv}")
     private String uploadDir;
@@ -173,6 +175,15 @@ public class OferenteService {
     public Oferente registrarOferente(Oferente oferente) {
         if (oferenteRepository.existsById(oferente.getCedulaOferente())) {
             throw new IllegalArgumentException("Ya existe un oferente con esa cédula");
+        }
+
+        String password = oferente.getPasswordOferente();
+        if (password == null || password.isBlank()) {
+            throw new IllegalArgumentException("La contraseña es obligatoria");
+        }
+
+        if (!password.startsWith("$2a$") && !password.startsWith("$2b$") && !password.startsWith("$2y$")) {
+            oferente.setPasswordOferente(passwordEncoder.encode(password));
         }
 
         oferente.setAprobado(false);

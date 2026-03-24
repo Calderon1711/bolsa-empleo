@@ -13,10 +13,10 @@
         <div class="container-fluid">
             <a class="navbar-brand fw-semibold" th:href="@{/}">BOLSA DE EMPLEO</a>
             <div class="navbar-nav">
-                <a class="nav-link" th:href="@{/oferente/dashboard(cedula=${cedula})}">Dashboard</a>
-                <a class="nav-link active" th:href="@{/oferente/habilidades(cedula=${cedula})}">Mis habilidades</a>
-                <a class="nav-link" th:href="@{/oferente/postulaciones(cedula=${cedula})}">Postulaciones</a>
-                <a class="nav-link" th:href="@{/oferente/cv(cedula=${cedula})}">Mi CV</a>
+                <a class="nav-link" th:href="@{/oferente/dashboard}">Dashboard</a>
+                <a class="nav-link active" th:href="@{/oferente/habilidades}">Mis habilidades</a>
+                <a class="nav-link" th:href="@{/oferente/postulaciones}">Postulaciones</a>
+                <a class="nav-link" th:href="@{/oferente/cv}">Mi CV</a>
             </div>
         </div>
     </nav>
@@ -61,7 +61,7 @@
 
                     <nav class="mb-3">
                         <a class="btn btn-outline-secondary btn-sm me-1"
-                           th:href="@{/oferente/habilidades(cedula=${cedula})}">
+                           th:href="@{/oferente/habilidades}">
                             Raíces
                         </a>
 
@@ -100,7 +100,6 @@
                     <h5>Agregar habilidad</h5>
 
                     <form method="post" th:action="@{/oferente/habilidades/agregar}">
-                        <input type="hidden" name="cedula" th:value="${cedula}"/>
 
                         <div class="mb-3">
                             <label class="form-label">Característica</label>

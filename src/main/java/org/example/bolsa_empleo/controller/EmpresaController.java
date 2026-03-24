@@ -45,6 +45,7 @@ public class EmpresaController {
         Empresa empresa = getEmpresaLogueada();
         if (empresa == null) return "redirect:/login";
         model.addAttribute("empresa", empresa);
+        model.addAttribute("nombreUsuario", empresa.getNombreEmpresa());
         return "empresa/Empresa";
     }
 

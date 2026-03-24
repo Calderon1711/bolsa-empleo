@@ -11,29 +11,7 @@
 
 <body class="d-flex flex-column min-vh-100">
 
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <div class="container-fluid">
-                <a class="navbar-brand" th:href="@{/}">
-                    <img th:src="@{/img/bolsaEmpleo.png}" alt="BolsaEmpleo" width="70" height="70" class="d-inline-block align-text-top">
-                </a>
-                <a class="navbar-brand fw-semibold" th:href="@{/}">BOLSA DE EMPLEO</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-                    <div class="navbar-nav">
-                        <a class="nav-link" th:href="@{/empresa/dashboard}">Dashboard</a>
-                        <a class="nav-link active" th:href="@{/empresa/puestos}">Mis puestos</a>
-                        <a class="nav-link" th:href="@{/empresa/puestos/publicar}">Publicar puesto</a>
-                    </div>
-                    <div class="navbar-nav ms-auto">
-                        <a class="btn btn-outline-light btn-sm" th:href="@{/login}">Salir</a>
-                    </div>
-                </div>
-            </div>
-        </nav>
-    </header>
+<div th:replace="~{fragmentos/nav :: navbar}"></div>
 
     <main class="container py-4 flex-grow-1">
         <div class="d-flex justify-content-between align-items-center mb-3">

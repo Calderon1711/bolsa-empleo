@@ -114,12 +114,22 @@ public class GeneralController {
     }
 
     @PostMapping("/login")
-    public String procesarLogin(@RequestParam String correo,
-                                @RequestParam String password,
-                                HttpSession session,
-                                Model model) {
+    public String login(@RequestParam String correo,
+                        @RequestParam String password,
+                        HttpSession session,
+                        RedirectAttributes ra) {
 
         Object usuario = loginService.validarLogin(correo, password);
+
+        if (usuario == null) {
+            ra.addFlashAttribute("error", "Credenciales inválidas");
+            return "redirect:/login";
+        }
+
+        // Limpiar cualquier sesión anterior
+        session.removeAttribute("adminLogueado");
+        session.removeAttribute("empresaLogueada");
+        session.removeAttribute("oferenteLogueado");
 
         if (usuario instanceof Administrador admin) {
             session.setAttribute("adminLogueado", admin);
@@ -130,10 +140,10 @@ public class GeneralController {
         } else if (usuario instanceof Oferente oferente) {
             session.setAttribute("oferenteLogueado", oferente);
             return "redirect:/oferente/dashboard";
-        } else {
-            model.addAttribute("error", "Correo o contraseña incorrectos");
-            return "general/Login";
         }
+
+        ra.addFlashAttribute("error", "No se pudo iniciar sesión");
+        return "redirect:/login";
     }
 
     @GetMapping("/logout")

@@ -39,15 +39,17 @@ public class LoginService {
 
         // EMPRESA
         var empresaOpt = empresaRepository.findByCorreoEmpresa(correo);
-        if (empresaOpt.isPresent() &&
-                passwordEncoder.matches(passwordPlano, empresaOpt.get().getPasswordEmpresa())) {
+        if (empresaOpt.isPresent()
+                && Boolean.TRUE.equals(empresaOpt.get().getAprobada())
+                && passwordEncoder.matches(passwordPlano, empresaOpt.get().getPasswordEmpresa())) {
             return empresaOpt.get();
         }
 
         // OFERENTE
         var oferenteOpt = oferenteRepository.findByCorreoOferente(correo);
-        if (oferenteOpt.isPresent() &&
-                passwordEncoder.matches(passwordPlano, oferenteOpt.get().getPasswordOferente())) {
+        if (oferenteOpt.isPresent()
+                && Boolean.TRUE.equals(oferenteOpt.get().getAprobado())
+                && passwordEncoder.matches(passwordPlano, oferenteOpt.get().getPasswordOferente())) {
             return oferenteOpt.get();
         }
 

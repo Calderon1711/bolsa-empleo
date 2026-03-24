@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark" th:fragment="navbar">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold" th:href="@{/}">
+            BOLSA DE EMPLEO
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarPrincipal">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarPrincipal">
+
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <!-- ADMIN -->
+                <li class="nav-item" th:if="${session.adminLogueado != null}">
+                    <a class="nav-link" th:href="@{/admin/dashboard}">Dashboard</a>
+                </li>
+                <li class="nav-item" th:if="${session.adminLogueado != null}">
+                    <a class="nav-link" th:href="@{/admin/empresas-pendientes}">Empresas pendientes</a>
+                </li>
+                <li class="nav-item" th:if="${session.adminLogueado != null}">
+                    <a class="nav-link" th:href="@{/admin/oferentes-pendientes}">Oferentes pendientes</a>
+                </li>
+                <li class="nav-item" th:if="${session.adminLogueado != null}">
+                    <a class="nav-link" th:href="@{/admin/caracteristicas}">Características</a>
+                </li>
+
+                <!-- EMPRESA -->
+                <li class="nav-item" th:if="${session.empresaLogueada != null}">
+                    <a class="nav-link" th:href="@{/empresa/dashboard}">Dashboard</a>
+                </li>
+                <li class="nav-item" th:if="${session.empresaLogueada != null}">
+                    <a class="nav-link" th:href="@{/empresa/puestos}">Mis puestos</a>
+                </li>
+                <li class="nav-item" th:if="${session.empresaLogueada != null}">
+                    <a class="nav-link" th:href="@{/empresa/puestos/publicar}">Publicar puesto</a>
+                </li>
+
+                <!-- OFERENTE -->
+                <li class="nav-item" th:if="${session.oferenteLogueado != null}">
+                    <a class="nav-link" th:href="@{/oferente/dashboard}">Dashboard</a>
+                </li>
+                <li class="nav-item" th:if="${session.oferenteLogueado != null}">
+                    <a class="nav-link" th:href="@{/oferente/habilidades}">Habilidades</a>
+                </li>
+                <li class="nav-item" th:if="${session.oferenteLogueado != null}">
+                    <a class="nav-link" th:href="@{/oferente/postulaciones}">Postulaciones</a>
+                </li>
+                <li class="nav-item" th:if="${session.oferenteLogueado != null}">
+                    <a class="nav-link" th:href="@{/oferente/cv}">CV</a>
+                </li>
+            </ul>
+
+            <div class="d-flex align-items-center gap-3">
+                <span class="text-white fw-semibold"
+                      th:if="${session.adminLogueado != null}"
+                      th:text="${session.adminLogueado.nombreAdministrador}">
+                    Admin
+                </span>
+
+                <span class="text-white fw-semibold"
+                      th:if="${session.empresaLogueada != null}"
+                      th:text="${session.empresaLogueada.correoEmpresa}">
+                    Empresa
+                </span>
+
+                <span class="text-white fw-semibold"
+                      th:if="${session.oferenteLogueado != null}"
+                      th:text="${session.oferenteLogueado.nombreOferente}">
+                    Oferente
+                </span>
+
+                <a class="btn btn-outline-light" th:href="@{/logout}">Salir</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+</body>
+</html>

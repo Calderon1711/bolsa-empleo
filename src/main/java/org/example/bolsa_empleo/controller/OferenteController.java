@@ -1,6 +1,8 @@
 package org.example.bolsa_empleo.controller;
 
+import jakarta.servlet.http.HttpSession;
 import org.example.bolsa_empleo.entidades.Caracteristica;
+import org.example.bolsa_empleo.entidades.Oferente;
 import org.example.bolsa_empleo.service.OferenteService;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -23,24 +25,35 @@ import java.util.List;
 public class OferenteController {
 
     private final OferenteService oferenteService;
+    private final HttpSession session;
 
-    public OferenteController(OferenteService oferenteService) {
+    public OferenteController(OferenteService oferenteService, HttpSession session) {
         this.oferenteService = oferenteService;
+        this.session = session;
+    }
+
+    private Oferente getOferenteLogueado() {
+        return (Oferente) session.getAttribute("oferenteLogueado");
     }
 
     @GetMapping("/dashboard")
-    public String dashboard(@RequestParam String cedula, Model model) {
-        var oferente = oferenteService.buscarOferente(cedula).orElse(null);
+    public String dashboard(Model model) {
+        Oferente oferente = getOferenteLogueado();
+        if (oferente == null) return "redirect:/login";
+
         model.addAttribute("oferente", oferente);
-        model.addAttribute("cedula", cedula);
+        model.addAttribute("cedula", oferente.getCedulaOferente());
+        model.addAttribute("nombreUsuario", oferente.getNombreOferente());
         return "oferente/Oferente";
     }
 
     @GetMapping("/habilidades")
-    public String habilidades(@RequestParam String cedula,
-                              @RequestParam(required = false) Long padreId,
+    public String habilidades(@RequestParam(required = false) Long padreId,
                               Model model) {
-        var oferente = oferenteService.buscarOferente(cedula).orElse(null);
+        Oferente oferente = getOferenteLogueado();
+        if (oferente == null) return "redirect:/login";
+
+        String cedula = oferente.getCedulaOferente();
         Caracteristica actual = padreId != null ? oferenteService.buscarCaracteristica(padreId).orElse(null) : null;
 
         List<Caracteristica> ruta = new ArrayList<>();
@@ -62,17 +75,23 @@ public class OferenteController {
     }
 
     @PostMapping("/habilidades/agregar")
-    public String agregarHabilidad(@RequestParam String cedula,
-                                   @RequestParam Long caracteristicaId,
+    public String agregarHabilidad(@RequestParam Long caracteristicaId,
                                    @RequestParam Integer nivel,
                                    RedirectAttributes ra) {
-        oferenteService.guardarHabilidad(cedula, caracteristicaId, nivel);
+        Oferente oferente = getOferenteLogueado();
+        if (oferente == null) return "redirect:/login";
+
+        oferenteService.guardarHabilidad(oferente.getCedulaOferente(), caracteristicaId, nivel);
         ra.addFlashAttribute("exitoso", "Habilidad agregada correctamente");
-        return "redirect:/oferente/habilidades?cedula=" + cedula;
+        return "redirect:/oferente/habilidades";
     }
 
     @GetMapping("/postulaciones")
-    public String postulaciones(@RequestParam String cedula, Model model) {
+    public String postulaciones(Model model) {
+        Oferente oferente = getOferenteLogueado();
+        if (oferente == null) return "redirect:/login";
+
+        String cedula = oferente.getCedulaOferente();
         model.addAttribute("cedula", cedula);
         model.addAttribute("postulaciones", oferenteService.listarPostulaciones(cedula));
         model.addAttribute("puestos", oferenteService.listarPuestosPublicos(cedula));
@@ -80,33 +99,41 @@ public class OferenteController {
     }
 
     @PostMapping("/postular")
-    public String postular(@RequestParam String cedula,
-                           @RequestParam Long puestoId,
+    public String postular(@RequestParam Long puestoId,
                            RedirectAttributes ra) {
-        oferenteService.postular(cedula, puestoId);
+        Oferente oferente = getOferenteLogueado();
+        if (oferente == null) return "redirect:/login";
+
+        oferenteService.postular(oferente.getCedulaOferente(), puestoId);
         ra.addFlashAttribute("exitoso", "Postulación registrada correctamente");
-        return "redirect:/oferente/postulaciones?cedula=" + cedula;
+        return "redirect:/oferente/postulaciones";
     }
 
     @GetMapping("/cv")
-    public String cv(@RequestParam String cedula, Model model) {
+    public String cv(Model model) {
+        Oferente oferente = getOferenteLogueado();
+        if (oferente == null) return "redirect:/login";
+
+        String cedula = oferente.getCedulaOferente();
         model.addAttribute("cedula", cedula);
         model.addAttribute("cv", oferenteService.obtenerCv(cedula).orElse(null));
         return "oferente/Oferente_CV";
     }
 
     @PostMapping("/cv")
-    public String subirCv(@RequestParam String cedula,
-                          @RequestParam String descripcion,
+    public String subirCv(@RequestParam String descripcion,
                           @RequestParam MultipartFile archivo,
                           RedirectAttributes ra) {
+        Oferente oferente = getOferenteLogueado();
+        if (oferente == null) return "redirect:/login";
+
         try {
-            oferenteService.guardarCv(cedula, descripcion, archivo);
+            oferenteService.guardarCv(oferente.getCedulaOferente(), descripcion, archivo);
             ra.addFlashAttribute("exitoso", "CV cargado correctamente");
         } catch (IllegalArgumentException | IOException e) {
             ra.addFlashAttribute("error", e.getMessage());
         }
-        return "redirect:/oferente/cv?cedula=" + cedula;
+        return "redirect:/oferente/cv";
     }
 
     @GetMapping("/cv/ver/{idCv}")

@@ -12,10 +12,10 @@
         <div class="container-fluid">
             <a class="navbar-brand fw-semibold" th:href="@{/}">BOLSA DE EMPLEO</a>
             <div class="navbar-nav">
-                <a class="nav-link" th:href="@{/oferente/dashboard(cedula=${cedula})}">Dashboard</a>
-                <a class="nav-link active" th:href="@{/oferente/habilidades(cedula=${cedula})}">Mis habilidades</a>
-                <a class="nav-link" th:href="@{/oferente/postulaciones(cedula=${cedula})}">Postulaciones</a>
-                <a class="nav-link" th:href="@{/oferente/cv(cedula=${cedula})}">Mi CV</a>
+                <a class="nav-link" th:href="@{/oferente/dashboard}">Dashboard</a>
+                <a class="nav-link active" th:href="@{/oferente/habilidades}">Mis habilidades</a>
+                <a class="nav-link" th:href="@{/oferente/postulaciones}">Postulaciones</a>
+                <a class="nav-link" th:href="@{/oferente/cv}">Mi CV</a>
             </div>
         </div>
     </nav>
@@ -36,7 +36,6 @@
                             <td th:text="${puesto.empresa.nombreEmpresa}"></td>
                             <td>
                                 <form method="post" th:action="@{/oferente/postular}">
-                                    <input type="hidden" name="cedula" th:value="${cedula}">
                                     <input type="hidden" name="puestoId" th:value="${puesto.id}">
                                     <button class="btn btn-primary btn-sm" type="submit">Postular</button>
                                 </form>
