@@ -67,6 +67,13 @@ public class EmpresaController {
         return "redirect:/empresa/puestos";
     }
 
+    @PostMapping("/puestos/activar/{id}")
+    public String activarPuesto(@PathVariable Long id) {
+        if (getEmpresaLogueada() == null) return "redirect:/login";
+        empresaService.activarPuesto(id);
+        return "redirect:/empresa/puestos";
+    }
+
     // ── Publicar puesto ──────────────────────────────────────────────────────────
 
     @GetMapping("/puestos/publicar")

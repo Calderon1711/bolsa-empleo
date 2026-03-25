@@ -47,11 +47,18 @@
                         <span th:unless="${puesto.estado}" class="badge bg-secondary">No</span>
                     </td>
                     <td>
-                        <form th:action="@{/empresa/puestos/desactivar/{id}(id=${puesto.id})}"
+                        <form th:if="${puesto.estado}"
+                              th:action="@{/empresa/puestos/desactivar/{id}(id=${puesto.id})}"
                               method="post" class="d-inline">
-                            <button type="submit" class="btn btn-outline-danger btn-sm"
-                                    th:disabled="${!puesto.estado}">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">
                                 Desactivar
+                            </button>
+                        </form>
+                        <form th:if="${!puesto.estado}"
+                              th:action="@{/empresa/puestos/activar/{id}(id=${puesto.id})}"
+                              method="post" class="d-inline">
+                            <button type="submit" class="btn btn-outline-success btn-sm">
+                                Activar
                             </button>
                         </form>
                         <a th:href="@{/empresa/candidatos/buscar(puestoId=${puesto.id})}"

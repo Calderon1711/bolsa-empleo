@@ -61,6 +61,12 @@ public class EmpresaService {
         puestoRepository.save(puesto);
     }
 
+    public void activarPuesto(Long idPuesto) {
+        Puesto puesto = puestoRepository.findById(idPuesto).orElseThrow();
+        puesto.setEstado(true);
+        puestoRepository.save(puesto);
+    }
+
     public void publicarPuesto(Puesto puesto, Long idEmpresa,
                                List<Long> caracteristicaIds, List<Integer> niveles) {
         Empresa empresa = empresaRepository.findById(idEmpresa).orElseThrow();
