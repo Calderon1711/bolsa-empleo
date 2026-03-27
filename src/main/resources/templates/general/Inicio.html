@@ -118,30 +118,7 @@
             </article>
         </section>
     </main>
-    <!-- ======================================================================================================================================================================== -->
-    <footer class="footer footer-dark mt-5 bg-dark">
-        <div class="container py-3">
-            <div class="row align-items-center gy-2">
-
-                <div class="col-12 col-md-6">
-                    <div class="text-white fw-semibold">Bolsa de Empleo</div>
-                    <small class="text-white-50">Total Soft Inc.</small>
-                </div>
-
-                <div class="col-12 col-md-6 text-md-end">
-                    <div>
-                        <small class="text-white-50">Contactar: </small>
-                        <a class="text-white-50 text-decoration-none" href="mailto:info@ejemplo.com">
-                            info@ejemplo.com
-                        </a>
-                    </div>
-                    <small class="text-white-50">Cr&eacute;dito: Equipo de desarrollo</small>
-                </div>
-
-            </div>
-        </div>
-    </footer>
-    <!-- ======================================================================================================================================================================== -->
+    <div th:replace="~{fragmentos/Footer :: footer}"></div>
     <script>
         document.querySelectorAll('[data-bs-toggle="popover"]').forEach(el => {
             new bootstrap.Popover(el);
