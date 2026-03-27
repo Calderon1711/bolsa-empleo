@@ -31,7 +31,7 @@
                     <th scope="col">Oferente</th>
                     <th scope="col">Requisitos cumplidos</th>
                     <th scope="col">% Coincidencia</th>
-                    <th scope="col"></th>
+                    <th scope="col">Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -40,10 +40,81 @@
                     <td th:text="${resultado.requisitosCumplidos + '/' + resultado.totalRequisitos}"></td>
                     <td th:text="${#numbers.formatDecimal(resultado.porcentajeCoincidencia, 1, 'COMMA', 2, 'POINT') + '%'}"></td>
                     <td>
-                        <a th:href="@{/empresa/candidatos/{cedula}(cedula=${resultado.oferente.cedulaOferente})}"
-                           class="btn btn-outline-primary btn-sm">
-                            Ver detalle
-                        </a>
+                        <!-- Badge de estado si ya tiene postulación -->
+                        <span th:if="${resultado.idPostulacion != null}"
+                              th:text="${resultado.estadoPostulacion}"
+                              th:class="${resultado.estadoPostulacion == 'ACEPTADA'} ? 'badge bg-success me-2' :
+                                        (${resultado.estadoPostulacion == 'RECHAZADA'} ? 'badge bg-danger me-2' : 'badge bg-secondary me-2')">
+                        </span>
+                        <!-- Con postulación existente -->
+                        <th:block th:if="${resultado.idPostulacion != null}">
+                            <form th:action="@{/empresa/candidatos/aceptar/{id}(id=${resultado.idPostulacion})}"
+                                  method="post" class="d-inline">
+                                <input type="hidden" name="puestoId" th:value="${puesto.id}">
+                                <button type="submit" class="btn btn-outline-success btn-sm">Aceptar</button>
+                            </form>
+                            <form th:action="@{/empresa/candidatos/rechazar/{id}(id=${resultado.idPostulacion})}"
+                                  method="post" class="d-inline ms-1">
+                                <input type="hidden" name="puestoId" th:value="${puesto.id}">
+                                <button type="submit" class="btn btn-outline-danger btn-sm">Rechazar</button>
+                            </form>
+                        </th:block>
+                        <!-- Sin postulación: crear y aceptar/rechazar directo -->
+                        <th:block th:if="${resultado.idPostulacion == null}">
+                            <form th:action="@{/empresa/candidatos/aceptar-directo}"
+                                  method="post" class="d-inline">
+                                <input type="hidden" name="puestoId" th:value="${puesto.id}">
+                                <input type="hidden" name="cedulaOferente" th:value="${resultado.oferente.cedulaOferente}">
+                                <button type="submit" class="btn btn-outline-success btn-sm">Aceptar</button>
+                            </form>
+                            <form th:action="@{/empresa/candidatos/rechazar-directo}"
+                                  method="post" class="d-inline ms-1">
+                                <input type="hidden" name="puestoId" th:value="${puesto.id}">
+                                <input type="hidden" name="cedulaOferente" th:value="${resultado.oferente.cedulaOferente}">
+                                <button type="submit" class="btn btn-outline-danger btn-sm">Rechazar</button>
+                            </form>
+                        </th:block>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h5 class="mt-5 mb-3">Oferentes postulados</h5>
+
+        <div th:if="${#lists.isEmpty(postulantes)}" class="text-secondary mb-3">
+            Ningún oferente se ha postulado a este puesto aún.
+        </div>
+
+        <table class="table table-striped" th:unless="${#lists.isEmpty(postulantes)}">
+            <thead>
+                <tr>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Fecha de postulación</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="postulacion : ${postulantes}">
+                    <td th:text="${postulacion.oferente.nombreOferente + ' ' + postulacion.oferente.primerApellido}"></td>
+                    <td th:text="${postulacion.fechaPostulacion}"></td>
+                    <td>
+                        <span th:text="${postulacion.estado}"
+                              th:classappend="${postulacion.estado == 'ACEPTADA'} ? 'badge bg-success' :
+                                             (${postulacion.estado == 'RECHAZADA'} ? 'badge bg-danger' : 'badge bg-secondary')">
+                        </span>
+                    </td>
+                    <td>
+                        <form th:action="@{/empresa/candidatos/aceptar/{id}(id=${postulacion.id})}"
+                              method="post" class="d-inline">
+                            <input type="hidden" name="puestoId" th:value="${puesto.id}">
+                            <button type="submit" class="btn btn-outline-success btn-sm">Aceptar</button>
+                        </form>
+                        <form th:action="@{/empresa/candidatos/rechazar/{id}(id=${postulacion.id})}"
+                              method="post" class="d-inline ms-1">
+                            <input type="hidden" name="puestoId" th:value="${puesto.id}">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Rechazar</button>
+                        </form>
                     </td>
                 </tr>
             </tbody>

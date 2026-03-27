@@ -3,6 +3,7 @@ package org.example.bolsa_empleo.controller;
 import jakarta.servlet.http.HttpSession;
 import org.example.bolsa_empleo.entidades.Empresa;
 import org.example.bolsa_empleo.entidades.OferenteCaracteristica;
+import org.example.bolsa_empleo.entidades.Postulacion;
 import org.example.bolsa_empleo.entidades.Puesto;
 import org.example.bolsa_empleo.service.AdminService;
 import org.example.bolsa_empleo.service.EmpresaService;
@@ -108,8 +109,41 @@ public class EmpresaController {
                 .findFirst().orElseThrow();
 
         model.addAttribute("candidatos", candidatos);
+        model.addAttribute("postulantes", empresaService.obtenerPostulantes(puestoId));
         model.addAttribute("puesto", puesto);
         return "empresa/Empresa_Candidatos";
+    }
+
+    @PostMapping("/candidatos/aceptar/{idPostulacion}")
+    public String aceptarPostulacion(@PathVariable Long idPostulacion,
+                                     @RequestParam Long puestoId) {
+        if (getEmpresaLogueada() == null) return "redirect:/login";
+        empresaService.aceptarPostulacion(idPostulacion);
+        return "redirect:/empresa/candidatos/buscar?puestoId=" + puestoId;
+    }
+
+    @PostMapping("/candidatos/rechazar/{idPostulacion}")
+    public String rechazarPostulacion(@PathVariable Long idPostulacion,
+                                      @RequestParam Long puestoId) {
+        if (getEmpresaLogueada() == null) return "redirect:/login";
+        empresaService.rechazarPostulacion(idPostulacion);
+        return "redirect:/empresa/candidatos/buscar?puestoId=" + puestoId;
+    }
+
+    @PostMapping("/candidatos/aceptar-directo")
+    public String aceptarDirecto(@RequestParam Long puestoId,
+                                 @RequestParam String cedulaOferente) {
+        if (getEmpresaLogueada() == null) return "redirect:/login";
+        empresaService.crearPostulacionConEstado(cedulaOferente, puestoId, "ACEPTADA");
+        return "redirect:/empresa/candidatos/buscar?puestoId=" + puestoId;
+    }
+
+    @PostMapping("/candidatos/rechazar-directo")
+    public String rechazarDirecto(@RequestParam Long puestoId,
+                                  @RequestParam String cedulaOferente) {
+        if (getEmpresaLogueada() == null) return "redirect:/login";
+        empresaService.crearPostulacionConEstado(cedulaOferente, puestoId, "RECHAZADA");
+        return "redirect:/empresa/candidatos/buscar?puestoId=" + puestoId;
     }
 
     // ── Detalle de oferente ──────────────────────────────────────────────────────

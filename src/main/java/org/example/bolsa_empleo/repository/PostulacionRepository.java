@@ -12,4 +12,6 @@ public interface PostulacionRepository extends JpaRepository<Postulacion, Long> 
     boolean existsByOferenteCedulaOferenteAndPuestoId(String cedulaOferente, Long puestoId);
 
     List<Postulacion> findByOferenteCedulaOferenteOrderByFechaPostulacionDesc(String cedulaOferente);
+
+    List<Postulacion> findByPuestoId(Long puestoId);
 }

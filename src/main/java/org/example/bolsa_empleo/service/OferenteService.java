@@ -113,7 +113,7 @@ public class OferenteService {
         Puesto puesto = puestoRepository.findById(puestoId)
                 .orElseThrow(() -> new IllegalArgumentException("Puesto no encontrado"));
 
-        Postulacion postulacion = new Postulacion(LocalDate.now(), "ENVIADA", oferente, puesto);
+        Postulacion postulacion = new Postulacion(LocalDate.now(), "ENVIADA", "OFERENTE", oferente, puesto);
         postulacionRepository.save(postulacion);
     }
 

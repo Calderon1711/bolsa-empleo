@@ -18,6 +18,10 @@ public class Postulacion {
     private String estado;
     // Ejemplos: "ENVIADA", "EN_REVISION", "ACEPTADA", "RECHAZADA"
 
+    @Column(nullable = false, length = 20)
+    private String origen;
+    // "OFERENTE" = el oferente se postuló; "EMPRESA" = la empresa la creó directamente
+
 
 
     @ManyToOne
@@ -31,9 +35,10 @@ public class Postulacion {
 
     public Postulacion() {}
 
-    public Postulacion(LocalDate fechaPostulacion, String estado, Oferente oferente, Puesto puesto) {
+    public Postulacion(LocalDate fechaPostulacion, String estado, String origen, Oferente oferente, Puesto puesto) {
         this.fechaPostulacion = fechaPostulacion;
         this.estado = estado;
+        this.origen = origen;
         this.oferente = oferente;
         this.puesto = puesto;
     }
@@ -73,5 +78,13 @@ public class Postulacion {
 
     public void setPuesto(Puesto puesto) {
         this.puesto = puesto;
+    }
+
+    public String getOrigen() {
+        return origen;
+    }
+
+    public void setOrigen(String origen) {
+        this.origen = origen;
     }
 }

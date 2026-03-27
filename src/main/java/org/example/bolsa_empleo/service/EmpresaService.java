@@ -18,6 +18,7 @@ public class EmpresaService {
     private final CaracteristicaRepository caracteristicaRepository;
     private final OferenteRepository oferenteRepository;
     private final OferenteCaracteristicaRepository oferenteCaracteristicaRepository;
+    private final PostulacionRepository postulacionRepository;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public EmpresaService(EmpresaRepository empresaRepository,
@@ -25,13 +26,15 @@ public class EmpresaService {
                           PuestoCaracteristicaRepository puestoCaracteristicaRepository,
                           CaracteristicaRepository caracteristicaRepository,
                           OferenteRepository oferenteRepository,
-                          OferenteCaracteristicaRepository oferenteCaracteristicaRepository) {
+                          OferenteCaracteristicaRepository oferenteCaracteristicaRepository,
+                          PostulacionRepository postulacionRepository) {
         this.empresaRepository = empresaRepository;
         this.puestoRepository = puestoRepository;
         this.puestoCaracteristicaRepository = puestoCaracteristicaRepository;
         this.caracteristicaRepository = caracteristicaRepository;
         this.oferenteRepository = oferenteRepository;
         this.oferenteCaracteristicaRepository = oferenteCaracteristicaRepository;
+        this.postulacionRepository = postulacionRepository;
     }
 
     // ── Registro ────────────────────────────────────────────────────────────────
@@ -65,6 +68,33 @@ public class EmpresaService {
         Puesto puesto = puestoRepository.findById(idPuesto).orElseThrow();
         puesto.setEstado(true);
         puestoRepository.save(puesto);
+    }
+
+    // ── Postulaciones ────────────────────────────────────────────────────────────
+
+    public List<Postulacion> obtenerPostulantes(Long puestoId) {
+        return postulacionRepository.findByPuestoId(puestoId).stream()
+                .filter(p -> "OFERENTE".equals(p.getOrigen()))
+                .toList();
+    }
+
+    public void aceptarPostulacion(Long idPostulacion) {
+        Postulacion p = postulacionRepository.findById(idPostulacion).orElseThrow();
+        p.setEstado("ACEPTADA");
+        postulacionRepository.save(p);
+    }
+
+    public void rechazarPostulacion(Long idPostulacion) {
+        Postulacion p = postulacionRepository.findById(idPostulacion).orElseThrow();
+        p.setEstado("RECHAZADA");
+        postulacionRepository.save(p);
+    }
+
+    public void crearPostulacionConEstado(String cedulaOferente, Long puestoId, String estado) {
+        Oferente oferente = oferenteRepository.findById(cedulaOferente).orElseThrow();
+        Puesto puesto = puestoRepository.findById(puestoId).orElseThrow();
+        Postulacion p = new Postulacion(LocalDate.now(), estado, "EMPRESA", oferente, puesto);
+        postulacionRepository.save(p);
     }
 
     public void publicarPuesto(Puesto puesto, Long idEmpresa,
@@ -109,19 +139,26 @@ public class EmpresaService {
         private final double porcentajeCoincidencia;
         private final int requisitosCumplidos;
         private final int totalRequisitos;
+        private final Long idPostulacion;
+        private final String estadoPostulacion;
 
         public ResultadoCandidato(Oferente oferente, double porcentajeCoincidencia,
-                                  int requisitosCumplidos, int totalRequisitos) {
+                                  int requisitosCumplidos, int totalRequisitos,
+                                  Long idPostulacion, String estadoPostulacion) {
             this.oferente = oferente;
             this.porcentajeCoincidencia = porcentajeCoincidencia;
             this.requisitosCumplidos = requisitosCumplidos;
             this.totalRequisitos = totalRequisitos;
+            this.idPostulacion = idPostulacion;
+            this.estadoPostulacion = estadoPostulacion;
         }
 
         public Oferente getOferente() { return oferente; }
         public double getPorcentajeCoincidencia() { return porcentajeCoincidencia; }
         public int getRequisitosCumplidos() { return requisitosCumplidos; }
         public int getTotalRequisitos() { return totalRequisitos; }
+        public Long getIdPostulacion() { return idPostulacion; }
+        public String getEstadoPostulacion() { return estadoPostulacion; }
     }
 
     public List<ResultadoCandidato> buscarCandidatos(Long puestoId) {
@@ -181,7 +218,17 @@ public class EmpresaService {
             double similitud = (normaA == 0 || normaB == 0) ? 0.0
                     : (dotProduct / (normaA * normaB)) * 100.0;
 
-            resultados.add(new ResultadoCandidato(oferente, similitud, comunes, totalRequisitos));
+            Long idPost = null;
+            String estadoPost = null;
+            Postulacion post = postulacionRepository.findByPuestoId(puestoId).stream()
+                    .filter(p -> p.getOferente().getCedulaOferente()
+                            .equals(oferente.getCedulaOferente()))
+                    .findFirst().orElse(null);
+            if (post != null) {
+                idPost = post.getId();
+                estadoPost = post.getEstado();
+            }
+            resultados.add(new ResultadoCandidato(oferente, similitud, comunes, totalRequisitos, idPost, estadoPost));
         }
 
         // Ordenar de mayor a menor % de coincidencia
