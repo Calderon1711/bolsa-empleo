@@ -4,7 +4,11 @@ import jakarta.servlet.http.HttpSession;
 import org.example.bolsa_empleo.entidades.Administrador;
 import org.example.bolsa_empleo.entidades.Empresa;
 import org.example.bolsa_empleo.entidades.Oferente;
+import org.example.bolsa_empleo.entidades.Nacionalidad;
 import org.example.bolsa_empleo.service.LoginService;
+import org.example.bolsa_empleo.service.EmpresaService;
+import org.example.bolsa_empleo.service.OferenteService;
+import org.example.bolsa_empleo.repository.NacionalidadRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,9 +22,17 @@ import java.util.Map;
 public class BolsaEmpleoApiController {
 
     private final LoginService loginService;
+    private final EmpresaService empresaService;
+    private final OferenteService oferenteService;
+    private final NacionalidadRepository nacionalidadRepository;
 
-    public BolsaEmpleoApiController(LoginService loginService) {
+    public BolsaEmpleoApiController(LoginService loginService, EmpresaService empresaService,
+                                    OferenteService oferenteService, NacionalidadRepository nacionalidadRepository)
+    {
         this.loginService = loginService;
+        this.empresaService = empresaService;
+        this.oferenteService = oferenteService;
+        this.nacionalidadRepository = nacionalidadRepository;
     }
 
     private ResponseEntity<Map<String, Object>> ok(Object data) {
@@ -139,5 +151,69 @@ public class BolsaEmpleoApiController {
     public ResponseEntity<Map<String, Object>> logout(HttpSession session) {
         session.invalidate();
         return mensaje("Sesión cerrada correctamente");
+    }
+
+    @PostMapping("/public/registro-empresa")
+    public ResponseEntity<Map<String, Object>> registrarEmpresa(
+            @RequestBody Map<String, String> body
+    ) {
+        try {
+            Empresa empresa = new Empresa();
+
+            empresa.setNombreEmpresa(body.get("nombreEmpresa"));
+            empresa.setCorreoEmpresa(body.get("correoEmpresa"));
+            empresa.setPasswordEmpresa(body.get("passwordEmpresa"));
+            empresa.setTelefono(body.get("telefono"));
+            empresa.setLocalizacion(body.get("localizacion"));
+            empresa.setDescripcionEmpresa(body.get("descripcionEmpresa"));
+
+            empresaService.registrarEmpresa(empresa);
+
+            return mensaje("Registro enviado correctamente. La empresa queda pendiente de aprobación.");
+        } catch (Exception e) {
+            return error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @GetMapping("/public/nacionalidades")
+    public ResponseEntity<Map<String, Object>> listarNacionalidades() {
+        return ok(
+                nacionalidadRepository.findAll()
+                        .stream()
+                        .map(n -> Map.of(
+                                "idNacionalidad", n.getIdNacionalidad(),
+                                "nombreNacionalidad", n.getNombreNacionalidad()
+                        ))
+                        .toList()
+        );
+    }
+
+    @PostMapping("/public/registro-oferente")
+    public ResponseEntity<Map<String, Object>> registrarOferente(
+            @RequestBody Map<String, String> body
+    ) {
+        try {
+            Long idNacionalidad = Long.parseLong(body.get("idNacionalidad"));
+
+            Nacionalidad nacionalidad = nacionalidadRepository.findById(idNacionalidad)
+                    .orElseThrow(() -> new IllegalArgumentException("La nacionalidad seleccionada no existe"));
+
+            Oferente oferente = new Oferente();
+
+            oferente.setCedulaOferente(body.get("cedulaOferente"));
+            oferente.setNombreOferente(body.get("nombreOferente"));
+            oferente.setPrimerApellido(body.get("primerApellido"));
+            oferente.setCorreoOferente(body.get("correoOferente"));
+            oferente.setPasswordOferente(body.get("passwordOferente"));
+            oferente.setTelefonoOferente(body.get("telefonoOferente"));
+            oferente.setLugarResidencia(body.get("lugarResidencia"));
+            oferente.setNacionalidad(nacionalidad);
+
+            oferenteService.registrarOferente(oferente);
+
+            return mensaje("Registro enviado correctamente. El oferente queda pendiente de aprobación.");
+        } catch (Exception e) {
+            return error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 }
