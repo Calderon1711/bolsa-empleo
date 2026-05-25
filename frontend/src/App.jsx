@@ -7,6 +7,8 @@ import OferenteDashboard from "./pages/OferenteDashboard.jsx";
 import RegistroEmpresa from "./pages/RegistroEmpresa.jsx";
 import RegistroOferente from "./pages/RegistroOferente.jsx";
 import RequireAuth from "./components/RequireAuth.jsx";
+import AdminEmpresasPendientes from "./pages/AdminEmpresasPendientes.jsx";
+import AdminOferentesPendientes from "./pages/AdminOferentesPendientes.jsx";
 
 export default function App() {
   return (
@@ -45,6 +47,24 @@ export default function App() {
               </RequireAuth>
             }
         />
+
+          <Route
+              path="/admin/empresas-pendientes"
+              element={
+                  <RequireAuth tipo="ADMIN">
+                      <AdminEmpresasPendientes />
+                  </RequireAuth>
+              }
+          />
+
+          <Route
+              path="/admin/oferentes-pendientes"
+              element={
+                  <RequireAuth tipo="ADMIN">
+                      <AdminOferentesPendientes />
+                  </RequireAuth>
+              }
+          />
       </Routes>
   );
 }

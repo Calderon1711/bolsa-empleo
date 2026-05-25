@@ -8,7 +8,10 @@ import org.example.bolsa_empleo.entidades.Nacionalidad;
 import org.example.bolsa_empleo.service.LoginService;
 import org.example.bolsa_empleo.service.EmpresaService;
 import org.example.bolsa_empleo.service.OferenteService;
+import org.example.bolsa_empleo.service.AdminService;
 import org.example.bolsa_empleo.repository.NacionalidadRepository;
+import org.example.bolsa_empleo.repository.AdministradorRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,14 +28,22 @@ public class BolsaEmpleoApiController {
     private final EmpresaService empresaService;
     private final OferenteService oferenteService;
     private final NacionalidadRepository nacionalidadRepository;
+    private final AdminService adminService;
+    private final AdministradorRepository administradorRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public BolsaEmpleoApiController(LoginService loginService, EmpresaService empresaService,
-                                    OferenteService oferenteService, NacionalidadRepository nacionalidadRepository)
+                                    OferenteService oferenteService, NacionalidadRepository nacionalidadRepository,
+                                    AdminService adminService, AdministradorRepository administradorRepository,
+                                    PasswordEncoder passwordEncoder)
     {
         this.loginService = loginService;
         this.empresaService = empresaService;
         this.oferenteService = oferenteService;
         this.nacionalidadRepository = nacionalidadRepository;
+        this.adminService = adminService;
+        this.administradorRepository = administradorRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     private ResponseEntity<Map<String, Object>> ok(Object data) {
@@ -212,6 +223,106 @@ public class BolsaEmpleoApiController {
             oferenteService.registrarOferente(oferente);
 
             return mensaje("Registro enviado correctamente. El oferente queda pendiente de aprobación.");
+        } catch (Exception e) {
+            return error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    private Map<String, Object> empresaPendienteDTO(Empresa empresa) {
+        Map<String, Object> dto = new LinkedHashMap<>();
+
+        dto.put("idEmpresa", empresa.getIdEmpresa());
+        dto.put("nombreEmpresa", empresa.getNombreEmpresa());
+        dto.put("correoEmpresa", empresa.getCorreoEmpresa());
+        dto.put("telefono", empresa.getTelefono());
+        dto.put("localizacion", empresa.getLocalizacion());
+        dto.put("descripcionEmpresa", empresa.getDescripcionEmpresa());
+        dto.put("fechaRegistroEmpresa", empresa.getFechaRegistroEmpresa() != null
+                ? empresa.getFechaRegistroEmpresa().toString()
+                : "");
+
+        return dto;
+    }
+
+    private Map<String, Object> oferentePendienteDTO(Oferente oferente) {
+        Map<String, Object> dto = new LinkedHashMap<>();
+
+        dto.put("cedulaOferente", oferente.getCedulaOferente());
+        dto.put("nombreOferente", oferente.getNombreOferente());
+        dto.put("primerApellido", oferente.getPrimerApellido());
+        dto.put("correoOferente", oferente.getCorreoOferente());
+        dto.put("telefonoOferente", oferente.getTelefonoOferente());
+        dto.put("lugarResidencia", oferente.getLugarResidencia());
+
+        if (oferente.getNacionalidad() != null) {
+            dto.put("nacionalidad", oferente.getNacionalidad().getNombreNacionalidad());
+        } else {
+            dto.put("nacionalidad", "");
+        }
+
+        return dto;
+    }
+
+    @GetMapping("/admin/empresas-pendientes")
+    public ResponseEntity<Map<String, Object>> listarEmpresasPendientes() {
+        return ok(
+                adminService.listarEmpresasPendientes()
+                        .stream()
+                        .map(this::empresaPendienteDTO)
+                        .toList()
+        );
+    }
+
+    @PostMapping("/admin/empresas/{idEmpresa}/aprobar")
+    public ResponseEntity<Map<String, Object>> aprobarEmpresa(
+            @PathVariable Long idEmpresa
+    ) {
+        try {
+            adminService.aprobarEmpresa(idEmpresa);
+            return mensaje("Empresa aprobada correctamente.");
+        } catch (Exception e) {
+            return error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @GetMapping("/admin/oferentes-pendientes")
+    public ResponseEntity<Map<String, Object>> listarOferentesPendientes() {
+        return ok(
+                adminService.listarOferentesPendientes()
+                        .stream()
+                        .map(this::oferentePendienteDTO)
+                        .toList()
+        );
+    }
+
+    @PostMapping("/admin/oferentes/{cedula}/aprobar")
+    public ResponseEntity<Map<String, Object>> aprobarOferente(
+            @PathVariable String cedula
+    ) {
+        try {
+            adminService.aprobarOferente(cedula);
+            return mensaje("Oferente aprobado correctamente.");
+        } catch (Exception e) {
+            return error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @PostMapping("/dev/reset-admin-password")
+    public ResponseEntity<Map<String, Object>> resetAdminPassword(
+            @RequestBody Map<String, String> body
+    ) {
+        try {
+            String correo = body.get("correo");
+            String nuevaPassword = body.get("nuevaPassword");
+
+            Administrador admin = administradorRepository.findByCorreoAdministrador(correo)
+                    .orElseThrow(() -> new IllegalArgumentException("Administrador no encontrado"));
+
+            admin.setPasswordAdministrador(passwordEncoder.encode(nuevaPassword));
+
+            administradorRepository.save(admin);
+
+            return mensaje("Contraseña del administrador actualizada correctamente.");
         } catch (Exception e) {
             return error(HttpStatus.BAD_REQUEST, e.getMessage());
         }

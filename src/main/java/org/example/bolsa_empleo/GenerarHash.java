@@ -7,3 +7,4 @@ public class GenerarHash {
         System.out.println(encoder.encode("1234"));
     }
 }
+//$10$nqQjLofyBG.0QfndggBaXud.WS04JHIDiziICtWio5f1raiRjyvA2
