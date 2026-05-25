@@ -62,11 +62,20 @@ public class AdminService {
     }
 
     public Caracteristica registrarCaracteristica(String nombre, Long padreId) {
-        Caracteristica c = new Caracteristica();
-        c.setNombre(nombre);
+        Caracteristica caracteristica = new Caracteristica();
+        caracteristica.setNombre(nombre);
+
         if (padreId != null) {
-            caracteristicaRepository.findById(padreId).ifPresent(c::setPadre);
+            Caracteristica padre = caracteristicaRepository.findById(padreId)
+                    .orElseThrow(() -> new IllegalArgumentException("La característica padre no existe"));
+
+            caracteristica.setPadre(padre);
         }
-        return caracteristicaRepository.save(c);
+
+        return caracteristicaRepository.save(caracteristica);
+    }
+
+    public List<Caracteristica> listarTodasCaracteristicas(){
+        return caracteristicaRepository.findAll();
     }
 }

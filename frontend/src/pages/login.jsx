@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../AuthContext.jsx";
 
 export default function Login() {
-    const [correo, setCorreo] = useState("");
+    const [usuario, setUsuario] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
 
@@ -15,7 +15,7 @@ export default function Login() {
         setError("");
 
         try {
-            const session = await login(correo, password);
+            const session = await login(usuario, password);
 
             if (session.tipo === "ADMIN") {
                 navigate("/admin");
@@ -26,8 +26,9 @@ export default function Login() {
             } else {
                 navigate("/");
             }
+
         } catch (e) {
-            setError(e.message);
+            setError(e.message || "Ocurrió un error");
         }
     }
 
@@ -37,22 +38,32 @@ export default function Login() {
                 <div className="card-body">
                     <h3 className="text-center mb-4">Iniciar sesión</h3>
 
-                    {error && <div className="alert alert-danger">{error}</div>}
+                    {error && (
+                        <div className="alert alert-danger">
+                            {error}
+                        </div>
+                    )}
 
                     <form onSubmit={ingresar}>
                         <div className="mb-3">
-                            <label className="form-label">Correo electrónico</label>
+                            <label className="form-label">
+                                Correo electrónico o identificación
+                            </label>
+
                             <input
-                                type="email"
+                                type="text"
                                 className="form-control"
-                                value={correo}
-                                onChange={(e) => setCorreo(e.target.value)}
+                                value={usuario}
+                                onChange={(e) => setUsuario(e.target.value)}
                                 required
                             />
                         </div>
 
                         <div className="mb-3">
-                            <label className="form-label">Contraseña</label>
+                            <label className="form-label">
+                                Contraseña
+                            </label>
+
                             <input
                                 type="password"
                                 className="form-control"

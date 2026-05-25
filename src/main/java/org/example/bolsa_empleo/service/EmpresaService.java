@@ -58,6 +58,26 @@ public class EmpresaService {
         return puestoRepository.findByEmpresaIdEmpresa(idEmpresa);
     }
 
+    public void desactivarPuestoEmpresa(Long idPuesto, Long idEmpresa) {
+        Puesto puesto = puestoRepository.findByIdAndEmpresaIdEmpresa(idPuesto, idEmpresa)
+                .orElseThrow(() -> new IllegalArgumentException("El puesto no existe o no pertenece a esta empresa"));
+
+        puesto.setEstado(false);
+        puestoRepository.save(puesto);
+    }
+
+    public List<PuestoCaracteristica> obtenerRequisitosPuesto(Long idPuesto) {
+        return puestoCaracteristicaRepository.findByPuestoId(idPuesto);
+    }
+
+    public void activarPuestoEmpresa(Long idPuesto, Long idEmpresa) {
+        Puesto puesto = puestoRepository.findByIdAndEmpresaIdEmpresa(idPuesto, idEmpresa)
+                .orElseThrow(() -> new IllegalArgumentException("El puesto no existe o no pertenece a esta empresa"));
+
+        puesto.setEstado(true);
+        puestoRepository.save(puesto);
+    }
+
     public void desactivarPuesto(Long idPuesto) {
         Puesto puesto = puestoRepository.findById(idPuesto).orElseThrow();
         puesto.setEstado(false);

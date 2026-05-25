@@ -27,6 +27,10 @@ export default function AdminDashboard() {
                     Ver oferentes pendientes
                 </Link>
 
+                <Link className="btn btn-primary" to="/admin/caracteristicas">
+                    Administrar características
+                </Link>
+
                 <button className="btn btn-danger" onClick={cerrarSesion}>
                     Cerrar sesión
                 </button>
