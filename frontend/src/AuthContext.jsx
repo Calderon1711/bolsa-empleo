@@ -6,7 +6,7 @@ const SESSION_KEY = "bolsaEmpleoSession";
 
 export function AuthProvider({ children }) {
     const [session, setSession] = useState(() => {
-        const guardada = localStorage.getItem(SESSION_KEY);
+        const guardada = localStorage.getItem("bolsaEmpleoSession");
         return guardada ? JSON.parse(guardada) : null;
     });
 

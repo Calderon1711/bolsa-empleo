@@ -3,10 +3,12 @@ package org.example.bolsa_empleo.api;
 import org.example.bolsa_empleo.entidades.Administrador;
 import org.example.bolsa_empleo.entidades.Empresa;
 import org.example.bolsa_empleo.entidades.Oferente;
+import org.example.bolsa_empleo.entidades.OferenteCaracteristica;
 import org.example.bolsa_empleo.entidades.Nacionalidad;
 import org.example.bolsa_empleo.entidades.Caracteristica;
 import org.example.bolsa_empleo.entidades.Puesto;
 import org.example.bolsa_empleo.entidades.PuestoCaracteristica;
+import org.example.bolsa_empleo.entidades.CV;
 import org.example.bolsa_empleo.security.JwtService;
 import org.example.bolsa_empleo.service.LoginService;
 import org.example.bolsa_empleo.service.EmpresaService;
@@ -18,12 +20,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @RestController
 @RequestMapping("/api")
@@ -146,6 +155,21 @@ public class BolsaEmpleoApiController {
         return dto;
     }
 
+    private Map<String, Object> cvDTO(CV cv) {
+        Map<String, Object> dto = new LinkedHashMap<>();
+
+        dto.put("idCurriculum", cv.getIdCurriculum());
+        dto.put("descripcionCurriculum", cv.getDescripcionCurriculum());
+        dto.put("rutaDocumento", cv.getRutaDocumento());
+        dto.put("fechaCreacionCurriculum", cv.getFechaCreacionCurriculum() != null
+                ? cv.getFechaCreacionCurriculum().toString()
+                : "");
+
+        dto.put("tieneArchivo", cv.getRutaDocumento() != null && !cv.getRutaDocumento().isBlank());
+
+        return dto;
+    }
+
     private String texto(Object valor) {
         return valor != null ? valor.toString().trim() : null;
     }
@@ -185,6 +209,36 @@ public class BolsaEmpleoApiController {
         }
 
         return ruta;
+    }
+
+    private String obtenerCedulaOferenteAutenticado() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || authentication.getName() == null) {
+            throw new IllegalStateException("No hay oferente autenticado");
+        }
+
+        return authentication.getName();
+    }
+
+    private Map<String, Object> habilidadOferenteDTO(OferenteCaracteristica habilidad) {
+        Map<String, Object> dto = new LinkedHashMap<>();
+
+        dto.put("id", habilidad.getId());
+        dto.put("nivel", habilidad.getNivel());
+
+        if (habilidad.getCaracteristica() != null) {
+            dto.put("caracteristicaId", habilidad.getCaracteristica().getId());
+            dto.put("caracteristicaNombre", habilidad.getCaracteristica().getNombre());
+
+            if (habilidad.getCaracteristica().getPadre() != null) {
+                dto.put("padreNombre", habilidad.getCaracteristica().getPadre().getNombre());
+            } else {
+                dto.put("padreNombre", null);
+            }
+        }
+
+        return dto;
     }
 
     @PostMapping("/auth/login")
@@ -636,6 +690,131 @@ public class BolsaEmpleoApiController {
             empresaService.activarPuestoEmpresa(idPuesto, idEmpresa);
 
             return mensaje("Puesto activado correctamente.");
+
+        } catch (Exception e) {
+            return error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @GetMapping("/oferente/cv")
+    public ResponseEntity<Map<String, Object>> obtenerCvOferente() {
+        try {
+            String cedulaOferente = obtenerCedulaOferenteAutenticado();
+
+            return ok(
+                    oferenteService.obtenerCv(cedulaOferente)
+                            .map(this::cvDTO)
+                            .orElse(null)
+            );
+
+        } catch (Exception e) {
+            return error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @PostMapping(value = "/oferente/cv", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Map<String, Object>> guardarCvOferente(
+            @RequestParam(value = "descripcion", required = false) String descripcion,
+            @RequestParam("archivo") MultipartFile archivo
+    ) {
+        try {
+            String cedulaOferente = obtenerCedulaOferenteAutenticado();
+
+            CV cv = oferenteService.guardarCv(cedulaOferente, descripcion, archivo);
+
+            return ok(cvDTO(cv));
+
+        } catch (Exception e) {
+            return error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @GetMapping("/oferente/cv/archivo")
+    public ResponseEntity<Resource> verCvOferente() throws Exception {
+        String cedulaOferente = obtenerCedulaOferenteAutenticado();
+
+        CV cv = oferenteService.obtenerCv(cedulaOferente)
+                .orElseThrow(() -> new IllegalArgumentException("El oferente no tiene currículo registrado"));
+
+        if (cv.getRutaDocumento() == null || cv.getRutaDocumento().isBlank()) {
+            throw new IllegalArgumentException("El currículo no tiene archivo asociado");
+        }
+
+        Path ruta = Paths.get(cv.getRutaDocumento()).toAbsolutePath().normalize();
+
+        Resource recurso = new UrlResource(ruta.toUri());
+
+        if (!recurso.exists() || !recurso.isReadable()) {
+            throw new IllegalArgumentException("No se pudo leer el archivo del currículo");
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        "inline; filename=\"" + ruta.getFileName().toString() + "\""
+                )
+                .body(recurso);
+    }
+
+    @GetMapping("/oferente/habilidades")
+    public ResponseEntity<Map<String, Object>> listarHabilidadesOferente() {
+        try {
+            String cedulaOferente = obtenerCedulaOferenteAutenticado();
+
+            return ok(
+                    oferenteService.listarHabilidades(cedulaOferente)
+                            .stream()
+                            .map(this::habilidadOferenteDTO)
+                            .toList()
+            );
+
+        } catch (Exception e) {
+            return error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @PostMapping("/oferente/habilidades")
+    public ResponseEntity<Map<String, Object>> guardarHabilidadOferente(
+            @RequestBody Map<String, Object> body
+    ) {
+        try {
+            String cedulaOferente = obtenerCedulaOferenteAutenticado();
+
+            Long caracteristicaId = numeroLong(body.get("caracteristicaId"));
+            Integer nivel = numeroInteger(body.get("nivel"));
+
+            if (caracteristicaId == null) {
+                return error(HttpStatus.BAD_REQUEST, "Debe seleccionar una característica");
+            }
+
+            if (nivel == null || nivel < 1 || nivel > 5) {
+                return error(HttpStatus.BAD_REQUEST, "El nivel debe estar entre 1 y 5");
+            }
+
+            OferenteCaracteristica habilidad = oferenteService.guardarHabilidad(
+                    cedulaOferente,
+                    caracteristicaId,
+                    nivel
+            );
+
+            return ok(habilidadOferenteDTO(habilidad));
+
+        } catch (Exception e) {
+            return error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/oferente/habilidades/{caracteristicaId}")
+    public ResponseEntity<Map<String, Object>> eliminarHabilidadOferente(
+            @PathVariable Long caracteristicaId
+    ) {
+        try {
+            String cedulaOferente = obtenerCedulaOferenteAutenticado();
+
+            oferenteService.eliminarHabilidad(cedulaOferente, caracteristicaId);
+
+            return mensaje("Habilidad eliminada correctamente.");
 
         } catch (Exception e) {
             return error(HttpStatus.BAD_REQUEST, e.getMessage());

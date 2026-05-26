@@ -12,5 +12,13 @@ public interface OferenteCaracteristicaRepository extends JpaRepository<Oferente
 
     List<OferenteCaracteristica> findByOferenteCedulaOferente(String cedulaOferente);
 
-    Optional<OferenteCaracteristica> findByOferenteCedulaOferenteAndCaracteristicaId(String cedulaOferente, Long caracteristicaId);
+    Optional<OferenteCaracteristica> findByOferenteCedulaOferenteAndCaracteristicaId(
+            String cedulaOferente,
+            Long caracteristicaId
+    );
+
+    void deleteByOferenteCedulaOferenteAndCaracteristicaId(
+            String cedulaOferente,
+            Long caracteristicaId
+    );
 }

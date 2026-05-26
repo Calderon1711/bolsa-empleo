@@ -67,7 +67,11 @@ public class OferenteService {
         return caracteristicaRepository.findById(id);
     }
 
-    public void guardarHabilidad(String cedulaOferente, Long caracteristicaId, Integer nivel) {
+    public OferenteCaracteristica guardarHabilidad(String cedulaOferente, Long caracteristicaId, Integer nivel) {
+        if (nivel == null || nivel < 1 || nivel > 5) {
+            throw new IllegalArgumentException("El nivel debe estar entre 1 y 5");
+        }
+
         Oferente oferente = oferenteRepository.findById(cedulaOferente)
                 .orElseThrow(() -> new IllegalArgumentException("Oferente no encontrado"));
 
@@ -75,17 +79,28 @@ public class OferenteService {
                 .orElseThrow(() -> new IllegalArgumentException("Característica no encontrada"));
 
         Optional<OferenteCaracteristica> existente =
-                oferenteCaracteristicaRepository.findByOferenteCedulaOferenteAndCaracteristicaId(cedulaOferente, caracteristicaId);
+                oferenteCaracteristicaRepository.findByOferenteCedulaOferenteAndCaracteristicaId(
+                        cedulaOferente,
+                        caracteristicaId
+                );
 
         if (existente.isPresent()) {
             OferenteCaracteristica oc = existente.get();
             oc.setNivel(nivel);
-            oferenteCaracteristicaRepository.save(oc);
-            return;
+            return oferenteCaracteristicaRepository.save(oc);
         }
 
         OferenteCaracteristica oc = new OferenteCaracteristica(oferente, caracteristica, nivel);
-        oferenteCaracteristicaRepository.save(oc);
+
+        return oferenteCaracteristicaRepository.save(oc);
+    }
+
+    public void eliminarHabilidad(String cedulaOferente, Long caracteristicaId) {
+        OferenteCaracteristica habilidad = oferenteCaracteristicaRepository
+                .findByOferenteCedulaOferenteAndCaracteristicaId(cedulaOferente, caracteristicaId)
+                .orElseThrow(() -> new IllegalArgumentException("La habilidad no existe"));
+
+        oferenteCaracteristicaRepository.delete(habilidad);
     }
 
     public List<Puesto> listarPuestosPublicos(String cedulaOferente) {

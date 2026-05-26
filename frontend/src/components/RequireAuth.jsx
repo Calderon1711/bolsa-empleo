@@ -17,7 +17,17 @@ export default function RequireAuth({ tipo, children }) {
     }
 
     if (tipo && session.tipo !== tipo) {
-        return <Navigate to="/" replace />;
+        return (
+            <div className="container mt-5">
+                <div className="alert alert-danger">
+                    No tiene permisos para entrar a esta sección.
+                    <br />
+                    Rol actual: {session.tipo}
+                    <br />
+                    Rol requerido: {tipo}
+                </div>
+            </div>
+        );
     }
 
     return children;

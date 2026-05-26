@@ -12,6 +12,8 @@ import AdminOferentesPendientes from "./pages/AdminOferentesPendientes.jsx";
 import AdminCaracteristicas from "./pages/AdminCaracteristicas.jsx";
 import EmpresaPuestos from "./pages/EmpresaPuestos";
 import EmpresaPublicarPuesto from "./pages/EmpresaPublicarPuesto.jsx";
+import OferenteCurriculo from "./pages/OferenteCurriculo.jsx";
+import OferenteHabilidades from "./pages/OferenteHabilidades.jsx";
 
 export default function App() {
     return (
@@ -95,7 +97,34 @@ export default function App() {
                     </RequireAuth>
                 }
             />
-            
+
+            <Route
+                path="/oferente"
+                element={
+                    <RequireAuth tipo="OFERENTE">
+                        <OferenteDashboard />
+                    </RequireAuth>
+                }
+            />
+
+            <Route
+                path="/oferente/habilidades"
+                element={
+                    <RequireAuth tipo="OFERENTE">
+                        <OferenteHabilidades />
+                    </RequireAuth>
+                }
+            />
+
+            <Route
+                path="/oferente/cv"
+                element={
+                    <RequireAuth tipo="OFERENTE">
+                        <OferenteCurriculo />
+                    </RequireAuth>
+                }
+            />
+
         </Routes>
     );
 }

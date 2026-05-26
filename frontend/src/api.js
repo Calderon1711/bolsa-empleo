@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8080/api";
+export const API_URL = "http://localhost:8080/api";
 const TOKEN_KEY = "bolsaEmpleoToken";
 
 export function obtenerToken() {
