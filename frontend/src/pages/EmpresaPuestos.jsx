@@ -43,6 +43,22 @@ export default function EmpresaPuestos() {
         }
     }
 
+    async function activarPuesto(idPuesto) {
+        setMensaje("");
+        setError("");
+
+        try {
+            const respuesta = await api.post(`/empresa/puestos/${idPuesto}/activar`);
+
+            setMensaje(respuesta.mensaje || "Puesto activado correctamente.");
+            await cargarPuestos();
+
+        } catch (e) {
+            console.error(e);
+            setError(e.message || "No se pudo activar el puesto");
+        }
+    }
+
     return (
         <div className="container mt-5">
             <div className="d-flex justify-content-between align-items-center mb-3">
@@ -125,12 +141,19 @@ export default function EmpresaPuestos() {
                                         </p>
                                     )}
 
-                                    {puesto.estado && (
+                                    {puesto.estado ? (
                                         <button
                                             className="btn btn-outline-danger btn-sm"
                                             onClick={() => desactivarPuesto(puesto.id)}
                                         >
                                             Desactivar puesto
+                                        </button>
+                                    ) : (
+                                        <button
+                                            className="btn btn-outline-success btn-sm"
+                                            onClick={() => activarPuesto(puesto.id)}
+                                        >
+                                            Activar puesto
                                         </button>
                                     )}
                                 </div>

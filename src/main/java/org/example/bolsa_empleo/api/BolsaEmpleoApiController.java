@@ -625,4 +625,20 @@ public class BolsaEmpleoApiController {
             return error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
+
+    @PostMapping("/empresa/puestos/{idPuesto}/activar")
+    public ResponseEntity<Map<String, Object>> activarPuestoEmpresa(
+            @PathVariable Long idPuesto
+    ) {
+        try {
+            Long idEmpresa = obtenerIdEmpresaAutenticada();
+
+            empresaService.activarPuestoEmpresa(idPuesto, idEmpresa);
+
+            return mensaje("Puesto activado correctamente.");
+
+        } catch (Exception e) {
+            return error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
 }
