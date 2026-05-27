@@ -141,6 +141,13 @@ export default function EmpresaPuestos() {
                                         </p>
                                     )}
 
+                                    <Link
+                                        className="btn btn-outline-primary btn-sm me-2"
+                                        to={`/empresa/puestos/${puesto.id}/candidatos`}
+                                    >
+                                        Buscar candidatos
+                                    </Link>
+
                                     {puesto.estado ? (
                                         <button
                                             className="btn btn-outline-danger btn-sm"

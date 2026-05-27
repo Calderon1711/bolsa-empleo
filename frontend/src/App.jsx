@@ -14,6 +14,8 @@ import EmpresaPuestos from "./pages/EmpresaPuestos";
 import EmpresaPublicarPuesto from "./pages/EmpresaPublicarPuesto.jsx";
 import OferenteCurriculo from "./pages/OferenteCurriculo.jsx";
 import OferenteHabilidades from "./pages/OferenteHabilidades.jsx";
+import EmpresaCandidatos from "./pages/EmpresaCandidatos.jsx";
+import OferentePuestos from "./pages/OferentePuestos.jsx";
 
 export default function App() {
     return (
@@ -121,6 +123,24 @@ export default function App() {
                 element={
                     <RequireAuth tipo="OFERENTE">
                         <OferenteCurriculo />
+                    </RequireAuth>
+                }
+            />
+
+            <Route
+                path="/empresa/puestos/:idPuesto/candidatos"
+                element={
+                    <RequireAuth tipo="EMPRESA">
+                        <EmpresaCandidatos />
+                    </RequireAuth>
+                }
+            />
+
+            <Route
+                path="/oferente/puestos"
+                element={
+                    <RequireAuth tipo="OFERENTE">
+                        <OferentePuestos />
                     </RequireAuth>
                 }
             />

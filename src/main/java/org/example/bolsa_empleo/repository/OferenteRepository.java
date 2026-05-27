@@ -14,4 +14,5 @@ public interface OferenteRepository extends JpaRepository<Oferente, String> {
     // Buscar oferente por correo (usado en login)
     Optional<Oferente> findByCorreoOferente(String correoOferente);
     List<Oferente> findByAprobadoFalseOrderByNombreOferenteAsc();
+    List<Oferente> findByAprobadoTrue();
 }

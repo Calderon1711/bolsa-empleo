@@ -19,6 +19,7 @@ public class EmpresaService {
     private final OferenteRepository oferenteRepository;
     private final OferenteCaracteristicaRepository oferenteCaracteristicaRepository;
     private final PostulacionRepository postulacionRepository;
+    private final CvRepository cvRepository;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public EmpresaService(EmpresaRepository empresaRepository,
@@ -27,6 +28,7 @@ public class EmpresaService {
                           CaracteristicaRepository caracteristicaRepository,
                           OferenteRepository oferenteRepository,
                           OferenteCaracteristicaRepository oferenteCaracteristicaRepository,
+                          CvRepository cvRepository,
                           PostulacionRepository postulacionRepository) {
         this.empresaRepository = empresaRepository;
         this.puestoRepository = puestoRepository;
@@ -34,6 +36,7 @@ public class EmpresaService {
         this.caracteristicaRepository = caracteristicaRepository;
         this.oferenteRepository = oferenteRepository;
         this.oferenteCaracteristicaRepository = oferenteCaracteristicaRepository;
+        this.cvRepository = cvRepository;
         this.postulacionRepository = postulacionRepository;
     }
 
@@ -254,5 +257,113 @@ public class EmpresaService {
         // Ordenar de mayor a menor % de coincidencia
         resultados.sort((a, b) -> Double.compare(b.getPorcentajeCoincidencia(), a.getPorcentajeCoincidencia()));
         return resultados;
+    }
+
+    public List<Map<String, Object>> buscarCandidatosCompatibles(Long idPuesto, Long idEmpresa) {
+        Puesto puesto = puestoRepository.findByIdAndEmpresaIdEmpresa(idPuesto, idEmpresa)
+                .orElseThrow(() -> new IllegalArgumentException("El puesto no existe o no pertenece a esta empresa"));
+
+        List<PuestoCaracteristica> requisitos = puestoCaracteristicaRepository.findByPuestoId(idPuesto);
+
+        if (requisitos.isEmpty()) {
+            throw new IllegalArgumentException("El puesto no tiene requisitos registrados");
+        }
+
+        List<Oferente> oferentes = oferenteRepository.findByAprobadoTrue();
+
+        List<Map<String, Object>> resultados = new ArrayList<>();
+
+        for (Oferente oferente : oferentes) {
+            List<OferenteCaracteristica> habilidades = oferenteCaracteristicaRepository
+                    .findByOferenteCedulaOferente(oferente.getCedulaOferente());
+
+            int totalRequisitos = requisitos.size();
+            int coincidenciasCompletas = 0;
+            double sumaPorcentajes = 0;
+
+            List<Map<String, Object>> detalleCoincidencias = new ArrayList<>();
+
+            for (PuestoCaracteristica requisito : requisitos) {
+                OferenteCaracteristica habilidadEncontrada = habilidades.stream()
+                        .filter(habilidad -> habilidad.getCaracteristica().getId()
+                                .equals(requisito.getCaracteristica().getId()))
+                        .findFirst()
+                        .orElse(null);
+
+                Integer nivelOferente = habilidadEncontrada != null
+                        ? habilidadEncontrada.getNivel()
+                        : null;
+
+                Integer nivelRequerido = requisito.getNivelRequerido();
+
+                boolean cumple = nivelOferente != null && nivelOferente >= nivelRequerido;
+
+                if (cumple) {
+                    coincidenciasCompletas++;
+                }
+
+                double porcentajeDetalle = 0;
+
+                if (nivelOferente != null && nivelRequerido != null && nivelRequerido > 0) {
+                    porcentajeDetalle = (nivelOferente * 100.0) / nivelRequerido;
+
+                    if (porcentajeDetalle > 100) {
+                        porcentajeDetalle = 100;
+                    }
+                }
+
+                sumaPorcentajes += porcentajeDetalle;
+
+                Map<String, Object> detalle = new LinkedHashMap<>();
+                detalle.put("caracteristicaId", requisito.getCaracteristica().getId());
+                detalle.put("caracteristicaNombre", requisito.getCaracteristica().getNombre());
+                detalle.put("nivelRequerido", nivelRequerido);
+                detalle.put("nivelOferente", nivelOferente);
+                detalle.put("cumple", cumple);
+                detalle.put("porcentajeDetalle", Math.round(porcentajeDetalle));
+
+                detalleCoincidencias.add(detalle);
+            }
+
+            long porcentajeGeneral = Math.round(sumaPorcentajes / totalRequisitos);
+
+            Map<String, Object> resultado = new LinkedHashMap<>();
+            resultado.put("cedulaOferente", oferente.getCedulaOferente());
+            resultado.put("nombreOferente", oferente.getNombreOferente());
+            resultado.put("primerApellido", oferente.getPrimerApellido());
+            resultado.put("correoOferente", oferente.getCorreoOferente());
+            resultado.put("telefonoOferente", oferente.getTelefonoOferente());
+            resultado.put("lugarResidencia", oferente.getLugarResidencia());
+
+            if (oferente.getNacionalidad() != null) {
+                resultado.put("nacionalidad", oferente.getNacionalidad().getNombreNacionalidad());
+            } else {
+                resultado.put("nacionalidad", "");
+            }
+
+            resultado.put("coincidencias", coincidenciasCompletas);
+            resultado.put("totalRequisitos", totalRequisitos);
+            resultado.put("porcentajeCoincidencia", porcentajeGeneral);
+            resultado.put("detalleCoincidencias", detalleCoincidencias);
+            resultado.put("tieneCv", cvRepository.findByOferenteCedulaOferente(
+                    oferente.getCedulaOferente()
+            ).isPresent());
+
+            resultados.add(resultado);
+        }
+
+        resultados.sort((a, b) -> Long.compare(
+                ((Number) b.get("porcentajeCoincidencia")).longValue(),
+                ((Number) a.get("porcentajeCoincidencia")).longValue()
+        ));
+
+        return resultados;
+    }
+
+    public List<Puesto> listarUltimosPuestosPublicos() {
+        return puestoRepository.findTop5ByTipoPublicacionAndEstadoOrderByFechaRegistroDesc(
+                "PUBLICA",
+                true
+        );
     }
 }

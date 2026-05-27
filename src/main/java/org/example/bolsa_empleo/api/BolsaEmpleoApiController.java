@@ -9,6 +9,7 @@ import org.example.bolsa_empleo.entidades.Caracteristica;
 import org.example.bolsa_empleo.entidades.Puesto;
 import org.example.bolsa_empleo.entidades.PuestoCaracteristica;
 import org.example.bolsa_empleo.entidades.CV;
+import org.example.bolsa_empleo.entidades.Postulacion;
 import org.example.bolsa_empleo.security.JwtService;
 import org.example.bolsa_empleo.service.LoginService;
 import org.example.bolsa_empleo.service.EmpresaService;
@@ -441,6 +442,27 @@ public class BolsaEmpleoApiController {
         return Long.parseLong(authentication.getName());
     }
 
+    private Map<String, Object> postulacionDTO(Postulacion postulacion) {
+        Map<String, Object> dto = new LinkedHashMap<>();
+
+        dto.put("id", postulacion.getId());
+        dto.put("fechaPostulacion", postulacion.getFechaPostulacion() != null
+                ? postulacion.getFechaPostulacion().toString()
+                : "");
+        dto.put("estado", postulacion.getEstado());
+        dto.put("origen", postulacion.getOrigen());
+
+        if (postulacion.getPuesto() != null) {
+            dto.put("puestoId", postulacion.getPuesto().getId());
+            dto.put("puestoTitulo", postulacion.getPuesto().getTitulo());
+            dto.put("empresaNombre", postulacion.getPuesto().getEmpresa() != null
+                    ? postulacion.getPuesto().getEmpresa().getNombreEmpresa()
+                    : "");
+        }
+
+        return dto;
+    }
+
     @GetMapping("/admin/empresas-pendientes")
     public ResponseEntity<Map<String, Object>> listarEmpresasPendientes() {
         return ok(
@@ -815,6 +837,129 @@ public class BolsaEmpleoApiController {
             oferenteService.eliminarHabilidad(cedulaOferente, caracteristicaId);
 
             return mensaje("Habilidad eliminada correctamente.");
+
+        } catch (Exception e) {
+            return error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @GetMapping("/empresa/puestos/{idPuesto}/candidatos")
+    public ResponseEntity<Map<String, Object>> buscarCandidatosPorPuesto(
+            @PathVariable Long idPuesto
+    ) {
+        try {
+            Long idEmpresa = obtenerIdEmpresaAutenticada();
+
+            return ok(
+                    empresaService.buscarCandidatosCompatibles(idPuesto, idEmpresa)
+            );
+
+        } catch (Exception e) {
+            return error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @GetMapping("/empresa/oferentes/{cedulaOferente}/cv")
+    public ResponseEntity<Resource> verCvOferenteDesdeEmpresa(
+            @PathVariable String cedulaOferente
+    ) throws Exception {
+
+        obtenerIdEmpresaAutenticada();
+
+        CV cv = oferenteService.obtenerCv(cedulaOferente)
+                .orElseThrow(() -> new IllegalArgumentException("El oferente no tiene currículo registrado"));
+
+        if (cv.getRutaDocumento() == null || cv.getRutaDocumento().isBlank()) {
+            throw new IllegalArgumentException("El currículo no tiene archivo asociado");
+        }
+
+        Path ruta = Paths.get(cv.getRutaDocumento()).toAbsolutePath().normalize();
+
+        Resource recurso = new UrlResource(ruta.toUri());
+
+        if (!recurso.exists() || !recurso.isReadable()) {
+            throw new IllegalArgumentException("No se pudo leer el archivo del currículo");
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        "inline; filename=\"" + ruta.getFileName().toString() + "\""
+                )
+                .body(recurso);
+    }
+
+    @GetMapping("/oferente/puestos-disponibles")
+    public ResponseEntity<Map<String, Object>> listarPuestosDisponiblesOferente() {
+        try {
+            String cedulaOferente = obtenerCedulaOferenteAutenticado();
+
+            return ok(
+                    oferenteService.listarPuestosDisponibles()
+                            .stream()
+                            .map(puesto -> {
+                                Map<String, Object> dto = puestoDTO(puesto);
+
+                                boolean postulado = oferenteService.listarPostulaciones(cedulaOferente)
+                                        .stream()
+                                        .anyMatch(p -> p.getPuesto() != null
+                                                && p.getPuesto().getId().equals(puesto.getId()));
+
+                                dto.put("postulado", postulado);
+
+                                return dto;
+                            })
+                            .toList()
+            );
+
+        } catch (Exception e) {
+            return error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @PostMapping("/oferente/puestos/{idPuesto}/postular")
+    public ResponseEntity<Map<String, Object>> postularPuesto(
+            @PathVariable Long idPuesto
+    ) {
+        try {
+            String cedulaOferente = obtenerCedulaOferenteAutenticado();
+
+            oferenteService.postular(cedulaOferente, idPuesto);
+
+            return mensaje("Postulación enviada correctamente.");
+
+        } catch (Exception e) {
+            return error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @GetMapping("/oferente/postulaciones")
+    public ResponseEntity<Map<String, Object>> listarPostulacionesOferente() {
+        try {
+            String cedulaOferente = obtenerCedulaOferenteAutenticado();
+
+            return ok(
+                    oferenteService.listarPostulaciones(cedulaOferente)
+                            .stream()
+                            .map(this::postulacionDTO)
+                            .toList()
+            );
+
+        } catch (Exception e) {
+            return error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @GetMapping("/public/puestos-recientes")
+    public ResponseEntity<Map<String, Object>> listarPuestosPublicosRecientes() {
+        try {
+            return ok(
+                    empresaService.listarUltimosPuestosPublicos()
+                            .stream()
+                            .map(this::puestoDTO)
+                            .toList()
+            );
 
         } catch (Exception e) {
             return error(HttpStatus.BAD_REQUEST, e.getMessage());

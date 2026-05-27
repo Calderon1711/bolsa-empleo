@@ -204,4 +204,8 @@ public class OferenteService {
         oferente.setAprobado(false);
         return oferenteRepository.save(oferente);
     }
+
+    public List<Puesto> listarPuestosDisponibles() {
+        return puestoRepository.findByEstadoTrueOrderByFechaRegistroDesc();
+    }
 }

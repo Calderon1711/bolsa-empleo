@@ -29,4 +29,11 @@ public interface PuestoRepository extends JpaRepository<Puesto, Long> {
     Optional<Puesto> findByIdAndEmpresaIdEmpresa(Long id, Long idEmpresa);
 
     List<Puesto> findByTipoPublicacionAndEstadoOrderByFechaRegistroDesc(String publica, boolean estado);
+
+    List<Puesto> findByEstadoTrueOrderByFechaRegistroDesc();
+
+    List<Puesto> findTop5ByTipoPublicacionAndEstadoOrderByFechaRegistroDesc(
+            String tipoPublicacion,
+            Boolean estado
+    );
 }

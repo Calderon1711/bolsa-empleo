@@ -25,6 +25,11 @@ export default function OferenteDashboard() {
             </div>
 
             <div className="d-grid gap-2 col-md-6">
+
+                <Link className="btn btn-primary" to="/oferente/puestos">
+                    Ver puestos disponibles
+                </Link>
+
                 <Link className="btn btn-primary" to="/oferente/habilidades">
                     Administrar habilidades
                 </Link>
